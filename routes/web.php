@@ -24,4 +24,4 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 
 // API SIAKADU
-Route::get('api/siakadu/get-data/mahasiswa/{nim}', [SiakaduController::class, 'getDataMahasiswa']);
+Route::post('api/siakadu/get-data/mahasiswa', [SiakaduController::class, 'getDataMahasiswa']);

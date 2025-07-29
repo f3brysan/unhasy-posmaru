@@ -53,6 +53,8 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ URL::to('/') }}/assets/js/config.js"></script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         .multi-step-form {
             max-width: 800px;
@@ -441,16 +443,11 @@
     <script src="{{ URL::to('/') }}/assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="{{ URL::to('/') }}/assets/vendor/js/menu.js"></script>
 
-    <!-- endbuild -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
+        integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <!-- Vendors JS -->
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/cleavejs/cleave.js"></script>
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/cleavejs/cleave-phone.js"></script>
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/bs-stepper/bs-stepper.js"></script>
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/select2/select2.js"></script>
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/@form-validation/popular.js"></script>
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/@form-validation/bootstrap5.js"></script>
-    <script src="{{ URL::to('/') }}/assets/vendor/libs/@form-validation/auto-focus.js"></script>
+    <!-- endbuild -->
 
     <!-- Main JS -->
     <script src="{{ URL::to('/') }}/assets/js/main.js"></script>
@@ -566,6 +563,39 @@
                 } else {
                     input.removeClass('is-invalid');
                 }
+            });
+
+            $("#nim").on('keyup', function() {
+                const nim = $(this).val();
+                console.log(nim);
+
+                // Clear previous timeout if it exists
+                if (typeof this.delayTimer !== 'undefined') {
+                    clearTimeout(this.delayTimer);
+                }
+
+                // Set new timeout
+                this.delayTimer = setTimeout(() => {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ URL::to('api/siakadu/get-data/mahasiswa') }}",
+                        // send the NIM as data
+                        data: {
+                            nim: nim,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: "json", // expected response type
+                        success: function(response) {
+                            // Handle successful response
+                            console.log(response);
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle errors
+                            console.error(xhr);
+                            toastr.error(xhr.responseJSON.message, 'Error');
+                        }
+                    });
+                }, 2000); // 2000ms = 2 seconds delay
             });
         });
     </script>
