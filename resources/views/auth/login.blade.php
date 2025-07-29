@@ -124,8 +124,8 @@
 
                     <p class="text-center">
                         <span>Anda belum terdaftar?</span>
-                        <a href="auth-register-cover.html">
-                            <span>Create an account</span>
+                        <a href="{{ URL::to('register') }}">
+                            <span>Daftar</span>
                         </a>
                     </p>                    
                 </div>
