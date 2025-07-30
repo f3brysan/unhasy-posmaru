@@ -289,6 +289,7 @@
                                             <option value="{{ $faculty->kode_fakultas }}">Fakultas {{ $faculty->fakultas
                                                 }}</option> @endforeach
                                         </select>
+                                        <input type="hidden" class="form-control" name="fakultas_kode" id="fakultas_kode">
                                         <div class="invalid-feedback">
                                             Fakultas wajib dipilih</div>
                                     </div>
@@ -303,6 +304,7 @@
                                             </option>
                                             @endforeach
                                         </select>
+                                        <input type="hidden" class="form-control" name="prodi_kode" id="prodi_kode">
                                         <div class="invalid-feedback">Program studi wajib dipilih</div>
                                     </div>
 
@@ -609,6 +611,8 @@
                             $("#nama").val(response.data.name);
                             $("#prodi").val(response.data.prodi_kode);
                             $("#fakultas").val(response.data.fakultas_kode);
+                            $("#fakultas_kode").val(response.data.fakultas_kode);
+                            $("#prodi_kode").val(response.data.prodi_kode);
                         },
                         error: function(xhr, status, error) {
                             // Handle errors
@@ -617,6 +621,8 @@
                             $("#nama").val('');
                             $("#prodi").val('');
                             $("#fakultas").val('');
+                            $("#fakultas_kode").val('');
+                            $("#prodi_kode").val('');
                         }
                     });
                 }, 1000); // 2000ms = 2 seconds delay
