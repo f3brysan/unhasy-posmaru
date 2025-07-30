@@ -21,7 +21,8 @@ Route::get('/', function () {
 
 // Auth
 Route::get('login', [AuthController::class, 'login'])->name('login');
-Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::get('register', [AuthController::class, 'register']);
+Route::post('store-register', [AuthController::class, 'storeRegister']);
 
 // API SIAKADU
 Route::post('api/siakadu/get-data/mahasiswa', [SiakaduController::class, 'getDataMahasiswa']);
