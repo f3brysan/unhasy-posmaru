@@ -40,8 +40,7 @@
     <link rel="stylesheet" href="{{ URL::to('/') }}/assets/vendor/libs/bs-stepper/bs-stepper.css" />
     <link rel="stylesheet" href="{{ URL::to('/') }}/assets/vendor/libs/bootstrap-select/bootstrap-select.css" />
     <link rel="stylesheet" href="{{ URL::to('/') }}/assets/vendor/libs/select2/select2.css" />
-    <link rel="stylesheet"
-        href="{{ URL::to('/') }}/assets/vendor/libs/@form-validation/form-validation.css" />
+    <link rel="stylesheet" href="{{ URL::to('/') }}/assets/vendor/libs/@form-validation/form-validation.css" />
 
     <!-- Page CSS -->
 
@@ -54,7 +53,9 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ URL::to('/') }}/assets/js/config.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+        integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
         .multi-step-form {
@@ -268,16 +269,14 @@
                                     <div class="form-group">
                                         <label for="nim" class="form-label">NIM <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="nim" name="nim"
-                                            required>
+                                        <input type="text" class="form-control" id="nim" name="nim" required>
                                         <div class="invalid-feedback">NIM wajib diisi</div>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="nama" class="form-label">Nama Lengkap <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="nama" name="nama"
-                                            required readonly>
+                                        <input type="text" class="form-control" id="nama" name="nama" required readonly>
                                         <div class="invalid-feedback">Nama wajib diisi</div>
                                     </div>
 
@@ -285,131 +284,140 @@
                                         <label for="fakultas" class="form-label">Fakultas <span
                                                 class="text-danger">*</span></label>
                                         <select class="form-control" id="fakultas" name="fakultas" required disabled>
-                                            <option value="">Pilih Fakultas</option>   
+                                            <option value="">Pilih Fakultas</option>
                                             @foreach ($faculties as $faculty)
-                                                <option value="{{ $faculty->kode_fakultas }}">Fakultas {{ $faculty->fakultas }}</option> @endforeach                                        
+                                            <option value="{{ $faculty->kode_fakultas }}">Fakultas {{ $faculty->fakultas
+                                                }}</option> @endforeach
                                         </select>
                                         <div class="invalid-feedback">
-    Fakultas wajib dipilih</div>
-    </div>
+                                            Fakultas wajib dipilih</div>
+                                    </div>
 
-    <div class="form-group">
-        <label for="prodi" class="form-label">Program Studi <span class="text-danger">*</span></label>
-        <select class="form-control" id="prodi" name="prodi" required disabled>
-            <option value="">Pilih Program Studi</option>
-            @foreach ($prodis as $prodi)
-                <option value="{{ $prodi->kode_prodi }}">Program Studi {{ $prodi->prodi }}</option>
-            @endforeach
-        </select>
-        <div class="invalid-feedback">Program studi wajib dipilih</div>
-    </div>
+                                    <div class="form-group">
+                                        <label for="prodi" class="form-label">Program Studi <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-control" id="prodi" name="prodi" required disabled>
+                                            <option value="">Pilih Program Studi</option>
+                                            @foreach ($prodis as $prodi)
+                                            <option value="{{ $prodi->kode_prodi }}">Program Studi {{ $prodi->prodi }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback">Program studi wajib dipilih</div>
+                                    </div>
 
-    <div class="form-group">
-        <label for="jenis_kelamin" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
-        <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" required>
-            <option value="">Pilih Jenis Kelamin</option>
-            <option value="Laki-laki">Laki-laki</option>
-            <option value="Perempuan">Perempuan</option>
-        </select>
-        <div class="invalid-feedback">Jenis kelamin wajib dipilih</div>
-    </div>
+                                    <div class="form-group">
+                                        <label for="jenis_kelamin" class="form-label">Jenis Kelamin <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" required>
+                                            <option value="">Pilih Jenis Kelamin</option>
+                                            <option value="L">Laki-laki</option>
+                                            <option value="P">Perempuan</option>
+                                        </select>
+                                        <div class="invalid-feedback">Jenis kelamin wajib dipilih</div>
+                                    </div>
 
-    <div class="form-actions">
-        <button type="button" class="btn btn-outline-secondary" disabled>Sebelumnya</button>
-        <button type="button" class="btn btn-primary next-step">Selanjutnya</button>
-    </div>
-    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            disabled>Sebelumnya</button>
+                                        <button type="button" class="btn btn-primary next-step">Selanjutnya</button>
+                                    </div>
+                                </div>
 
-    <!-- Step 2: Data Pribadi -->
-    <div class="form-step" data-step="2">
-        <div class="form-group">
-            <label for="ukuran_kaos" class="form-label">Ukuran Kaos <span class="text-danger">*</span></label>
-            <select class="form-control" id="ukuran_kaos" name="ukuran_kaos" required>
-                <option value="">Pilih Ukuran Kaos</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-            </select>
-            <div class="invalid-feedback">Ukuran kaos wajib dipilih</div>
+                                <!-- Step 2: Data Pribadi -->
+                                <div class="form-step" data-step="2">
+                                    <div class="form-group">
+                                        <label for="ukuran_kaos" class="form-label">Ukuran Kaos <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-control" id="ukuran_kaos" name="ukuran_kaos" required>
+                                            <option value="">Pilih Ukuran Kaos</option>
+                                            <option value="S">S</option>
+                                            <option value="M">M</option>
+                                            <option value="L">L</option>
+                                            <option value="XL">XL</option>
+                                            <option value="XXL">XXL</option>
+                                        </select>
+                                        <div class="invalid-feedback">Ukuran kaos wajib dipilih</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="nomor_hp" class="form-label">Nomor HP <span
+                                                class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="nomor_hp" name="nomor_hp"
+                                            placeholder="Contoh: 08123456789" required>
+                                        <div class="invalid-feedback">Nomor HP wajib diisi</div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary prev-step">Sebelumnya</button>
+                                        <button type="button" class="btn btn-primary next-step">Selanjutnya</button>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Konfirmasi -->
+                                <div class="form-step" data-step="3">
+                                    <h4 class="mb-3">Konfirmasi Data</h4>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">NIM:</div>
+                                        <div id="summary-nim"></div>
+                                    </div>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">Nama:</div>
+                                        <div id="summary-nama"></div>
+                                    </div>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">Program Studi:</div>
+                                        <div id="summary-prodi"></div>
+                                    </div>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">Fakultas:</div>
+                                        <div id="summary-fakultas"></div>
+                                    </div>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">Jenis Kelamin:</div>
+                                        <div id="summary-jenis_kelamin"></div>
+                                    </div>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">Ukuran Kaos:</div>
+                                        <div id="summary-ukuran_kaos"></div>
+                                    </div>
+
+                                    <div class="summary-item">
+                                        <div class="summary-label">Nomor HP:</div>
+                                        <div id="summary-nomor_hp"></div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary prev-step">Sebelumnya</button>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Success -->
+                                <div class="form-step text-center" data-step="4">
+                                    <div class="success-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <h3 class="mb-2">Pendaftaran Berhasil!</h3>
+                                    <p class="mb-4">Data Anda telah berhasil terdaftar.</p>
+                                    <button type="button" class="btn btn-primary" id="reset-form">Daftar
+                                        Lagi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / Multi Steps Registration -->
         </div>
-
-        <div class="form-group">
-            <label for="nomor_hp" class="form-label">Nomor HP <span class="text-danger">*</span></label>
-            <input type="tel" class="form-control" id="nomor_hp" name="nomor_hp" placeholder="Contoh: 08123456789"
-                required>
-            <div class="invalid-feedback">Nomor HP wajib diisi</div>
-        </div>
-
-        <div class="form-actions">
-            <button type="button" class="btn btn-outline-secondary prev-step">Sebelumnya</button>
-            <button type="button" class="btn btn-primary next-step">Selanjutnya</button>
-        </div>
-    </div>
-
-    <!-- Step 3: Konfirmasi -->
-    <div class="form-step" data-step="3">
-        <h4 class="mb-3">Konfirmasi Data</h4>
-
-        <div class="summary-item">
-            <div class="summary-label">NIM:</div>
-            <div id="summary-nim"></div>
-        </div>
-
-        <div class="summary-item">
-            <div class="summary-label">Nama:</div>
-            <div id="summary-nama"></div>
-        </div>
-
-        <div class="summary-item">
-            <div class="summary-label">Program Studi:</div>
-            <div id="summary-prodi"></div>
-        </div>
-
-        <div class="summary-item">
-            <div class="summary-label">Fakultas:</div>
-            <div id="summary-fakultas"></div>
-        </div>
-
-        <div class="summary-item">
-            <div class="summary-label">Jenis Kelamin:</div>
-            <div id="summary-jenis_kelamin"></div>
-        </div>
-
-        <div class="summary-item">
-            <div class="summary-label">Ukuran Kaos:</div>
-            <div id="summary-ukuran_kaos"></div>
-        </div>
-
-        <div class="summary-item">
-            <div class="summary-label">Nomor HP:</div>
-            <div id="summary-nomor_hp"></div>
-        </div>
-
-        <div class="form-actions">
-            <button type="button" class="btn btn-outline-secondary prev-step">Sebelumnya</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </div>
-
-    <!-- Step 4: Success -->
-    <div class="form-step text-center" data-step="4">
-        <div class="success-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h3 class="mb-2">Pendaftaran Berhasil!</h3>
-        <p class="mb-4">Data Anda telah berhasil terdaftar.</p>
-        <button type="button" class="btn btn-primary" id="reset-form">Daftar
-            Lagi</button>
-    </div>
-    </form>
-    </div>
-    </div>
-    </div>
-    </div>
-    <!-- / Multi Steps Registration -->
-    </div>
     </div>
 
     <script>
@@ -554,7 +562,7 @@
                 $('#summary-nama').text($('#nama').val());
                 $('#summary-prodi').text($('#prodi option:selected').text());
                 $('#summary-fakultas').text($('#fakultas option:selected').text());
-                $('#summary-jenis_kelamin').text($('#jenis_kelamin').val());
+                $('#summary-jenis_kelamin').text($('#jenis_kelamin option:selected').text());
                 $('#summary-ukuran_kaos').text($('#ukuran_kaos').val());
                 $('#summary-nomor_hp').text($('#nomor_hp').val());
             }
@@ -611,10 +619,10 @@
                             $("#fakultas").val('');
                         }
                     });
-                }, 2000); // 2000ms = 2 seconds delay
+                }, 1000); // 2000ms = 2 seconds delay
             });
         });
     </script>
-    </body>
+</body>
 
 </html>
