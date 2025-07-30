@@ -275,38 +275,33 @@
                                         <label for="nama" class="form-label">Nama Lengkap <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="nama" name="nama"
-                                            required>
+                                            required readonly>
                                         <div class="invalid-feedback">Nama wajib diisi</div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="prodi" class="form-label">Program Studi <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-control" id="prodi" name="prodi" required>
-                                            <option value="">Pilih Program Studi</option>
-                                            <option value="Teknik Informatika">Teknik Informatika</option>
-                                            <option value="Sistem Informasi">Sistem Informasi</option>
-                                            <option value="Teknik Elektro">Teknik Elektro</option>
-                                            <option value="Teknik Mesin">Teknik Mesin</option>
-                                            <option value="Manajemen">Manajemen</option>
-                                            <option value="Akuntansi">Akuntansi</option>
-                                        </select>
-                                        <div class="invalid-feedback">Program studi wajib dipilih</div>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="fakultas" class="form-label">Fakultas <span
                                                 class="text-danger">*</span></label>
                                         <select class="form-control" id="fakultas" name="fakultas" required>
-                                            <option value="">Pilih Fakultas</option>
-                                            <option value="FTI">Fakultas Teknologi Informasi</option>
-                                            <option value="FT">Fakultas Teknik</option>
-                                            <option value="FE">Fakultas Ekonomi</option>
-                                            <option value="FH">Fakultas Hukum</option>
-                                            <option value="FISIP">Fakultas Ilmu Sosial dan Politik</option>
+                                            <option value="">Pilih Fakultas</option>   
+                                            @foreach ($faculties as $faculty)
+                                                <option value="{{ $faculty->kode_fakultas }}">Fakultas {{ $faculty->fakultas }}</option>
+                                            @endforeach                                        
                                         </select>
                                         <div class="invalid-feedback">Fakultas wajib dipilih</div>
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="prodi" class="form-label">Program Studi <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-control" id="prodi" name="prodi" required>
+                                            <option value="">Pilih Program Studi</option>  
+                                            @foreach ($prodis as $prodi)
+                                                <option value="{{ $prodi->kode_prodi }}">Program Studi {{ $prodi->prodi }}</option>
+                                            @endforeach                                          
+                                        </select>
+                                        <div class="invalid-feedback">Program studi wajib dipilih</div>
+                                    </div>                                    
 
                                     <div class="form-group">
                                         <label for="jenis_kelamin" class="form-label">Jenis Kelamin <span
