@@ -410,8 +410,7 @@
                                     </div>
                                     <h3 class="mb-2">Pendaftaran Berhasil!</h3>
                                     <p class="mb-4">Data Anda telah berhasil terdaftar.</p>
-                                    <button type="button" class="btn btn-primary" id="reset-form">Daftar
-                                        Lagi</button>
+                                    <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
                                 </div>
                             </form>
                         </div>
