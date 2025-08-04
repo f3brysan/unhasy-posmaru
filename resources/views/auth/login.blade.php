@@ -188,7 +188,7 @@
 
                         if (response.status == 'success') {
                             toastr.success(response.message, 'Sukses!');
-                            window.location.href = "{{ URL::to('dashboard') }}";
+                            window.location.href = "{{ URL::to('beranda') }}";
                         }                   
                     },
                     error: function (xhr, status, error) {
