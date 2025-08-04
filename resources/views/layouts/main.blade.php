@@ -3,6 +3,7 @@
     data-assets-path="{{ URL::to('/') }}/assets/" data-template="horizontal-menu-template-no-customizer">
 
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
@@ -71,7 +72,7 @@
                     <!-- / Menu -->
 
                     <!-- Content -->
-                    @yield('content')                    
+                    @yield('content')
                     <!--/ Content -->
 
                     <!-- Footer -->
@@ -120,6 +121,16 @@
 
     <!-- Page JS -->
     <script src="{{ URL::to('/') }}/assets/js/dashboards-analytics.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        });
+    </script>
 
     @stack('js')
 </body>

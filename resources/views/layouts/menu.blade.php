@@ -34,7 +34,7 @@
                 </a>
                 <ul class="menu-sub">
                     <li class="menu-item">
-                        <a href="layouts-without-menu.html" class="menu-link">
+                        <a href="{{ URL::to('master/pengguna') }}" class="menu-link">
                             <i class="menu-icon tf-icons ti ti-menu-2"></i>
                             <div data-i18n="Pengguna">Pengguna</div>
                         </a>
