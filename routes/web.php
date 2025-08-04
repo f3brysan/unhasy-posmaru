@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\SiakaduController;
 use App\Http\Controllers\DashboardController;
 
@@ -21,7 +22,11 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth:web'])->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index']);    
+    Route::get('beranda', [DashboardController::class, 'index']);    
+});
+
+Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
+    Route::get('master/pengguna', [UserController::class, 'index']);    
 });
 
 // Auth
