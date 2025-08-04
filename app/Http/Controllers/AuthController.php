@@ -73,6 +73,8 @@ class AuthController extends Controller
                 'hp' => $request->nomor_hp
             ]);
 
+            $insertUser->assignRole('mahasiswa');
+
             // Commit the transaction
             DB::commit();
 
