@@ -8,7 +8,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Login Cover - Pages | Vuexy - Bootstrap Admin Template</title>
+    <title>Login | POSMARU</title>
 
     <meta name="description" content="" />
 
@@ -48,6 +48,10 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ URL::to('/') }}/assets/js/config.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+        integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -100,10 +104,11 @@
                     <h3 class="mb-1">Welcome to POSMARU 👋</h3>
                     <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
-                    <form id="formAuthentication" class="mb-3" action="index.html" method="GET">
+                    <form id="formAuthentication">
+                        @csrf
                         <div class="mb-3">
                             <label for="email" class="form-label">NIM / NIP</label>
-                            <input type="text" class="form-control" id="email" name="email-username"
+                            <input type="text" class="form-control" id="email" name="no_induk"
                                 placeholder="Masukkan NIM / NIP" autofocus />
                         </div>
                         <div class="mb-3 form-password-toggle">
@@ -119,7 +124,7 @@
                         </div>
                         <div class="mb-3">
                         </div>
-                        <button class="btn btn-primary d-grid w-100">Sign in</button>
+                        <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
                     </form>
 
                     <p class="text-center">
@@ -127,7 +132,7 @@
                         <a href="{{ URL::to('register') }}">
                             <span>Daftar</span>
                         </a>
-                    </p>                    
+                    </p>
                 </div>
             </div>
             <!-- /Login -->
@@ -158,9 +163,43 @@
 
     <!-- Main JS -->
     <script src="{{ URL::to('/') }}/assets/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
+        integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- Page JS -->
-    <script src="{{ URL::to('/') }}/assets/js/pages-auth.js"></script>
+    {{-- <script src="{{ URL::to('/') }}/assets/js/pages-auth.js"></script> --}}
+
+    <script>
+        $(document).ready(function() {
+            $("#formAuthentication").on("submit", function(e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                toastr.info('Otentikasi sedang diproses', 'Mohon tunggu...');
+                
+                $.ajax({
+                    type: "POST",
+                    url: "{{ URL::to('auth') }}",
+                    data: formData,
+                    dataType: "JSON",
+                    success: function (response) {
+                        console.log(response);     
+
+                        if (response.status == 'success') {
+                            toastr.success(response.message, 'Sukses!');
+                            window.location.href = "{{ URL::to('dashboard') }}";
+                        }                   
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseJSON.message);
+                        toastr.error(xhr.responseJSON.message, 'Oops!');
+                    }
+                });
+
+            });
+        });
+    </script>
 </body>
 
 </html>

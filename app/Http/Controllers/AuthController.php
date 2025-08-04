@@ -13,6 +13,31 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
+
+    public function auth(Request $request)
+    {
+        $request->validate([
+            'no_induk' => 'required',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('no_induk', 'password');
+
+        if (auth()->attempt($credentials)) {
+            $request->session()->regenerate();
+            $user = auth()->user();      
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login Berhasil',
+                'data' => $user,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No Induk atau Password Salah',
+            ], 401);
+        }
+    }
     
     public function register()
     {
