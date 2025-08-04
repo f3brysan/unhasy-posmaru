@@ -8,7 +8,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Multi Steps Sign-up - Pages | Vuexy - Bootstrap Admin Template</title>
+    <title>Registrasi | POSMARU</title>
 
     <meta name="description" content="" />
 
@@ -289,7 +289,8 @@
                                             <option value="{{ $faculty->kode_fakultas }}">Fakultas {{ $faculty->fakultas
                                                 }}</option> @endforeach
                                         </select>
-                                        <input type="hidden" class="form-control" name="fakultas_kode" id="fakultas_kode">
+                                        <input type="hidden" class="form-control" name="fakultas_kode"
+                                            id="fakultas_kode">
                                         <div class="invalid-feedback">
                                             Fakultas wajib dipilih</div>
                                     </div>
