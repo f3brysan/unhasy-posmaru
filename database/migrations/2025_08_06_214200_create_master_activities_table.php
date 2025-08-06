@@ -16,15 +16,14 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->integer('year')->nullable();
-            $table->date('implementation_date')->nullable();
             $table->date('registration_start_date')->nullable();
             $table->date('registration end_date')->nullable();
             $table->date('activity_start_date')->nullable();
             $table->date('activity_end_date')->nullable();
-            $table->time('student_report_time')->nullable();
             $table->smallInteger('is_active')->nullable();
-            $table->timestamp('created_at', 6)->nullable();
-            $table->timestamp('updated_at', 6)->nullable();
+            $table->time('student_report_start', 6)->nullable();
+            $table->time('student_report_end', 6)->nullable();
+            $table->timestamps(6);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
         });
