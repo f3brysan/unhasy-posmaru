@@ -16,8 +16,9 @@ class UserController extends Controller
             if ($request->ajax()) {
                 return datatables()->of($users)
                     ->addColumn('action', function ($row) {
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Edit" class="edit btn btn-warning btn-sm resetPassword">Reset</a>';
-                        $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser">Delete</a>';
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Edit" class="mx-auto btn btn-warning btn-sm resetPassword">Reset</a>';
+                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-name="'.$row->name.'" data-original-title="Login As" class="mx-auto btn btn-secondary btn-sm loginAs">Login As</a>';
+                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Delete" class="mx-auto btn btn-danger btn-sm deleteUser">Delete</a>';
                         return $btn;
                     })
                     ->addColumn('role', function ($row) {

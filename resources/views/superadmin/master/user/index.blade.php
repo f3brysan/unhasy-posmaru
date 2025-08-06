@@ -95,5 +95,40 @@
                 }
             });
         });
+
+        $(document).on('click', '.loginAs', function() {
+            var name = $(this).data('name');
+            Swal.fire({
+                title: "Login As",
+                text: "Apakah anda yakin ingin melakukan login sebagai " + name + "?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, login !"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ URL::to('login-as') }}",
+                        data: {
+                            id: $(this).data('id'),
+                        },
+                        dataType: "JSON",
+                        success: function(response) {
+                            Swal.fire({
+                                title: "Sukses!",
+                                text: response.message,
+                                icon: "success"
+                            });
+
+                            setTimeout(function() {
+                                window.location.href = "{{ URL::to('beranda') }}";
+                            }, 1000);
+                        }
+                    });
+                }
+            });
+        });
     </script>
 @endpush

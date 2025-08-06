@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Biodata;
 use App\Models\User;
+use App\Models\Biodata;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 
 class AuthController extends Controller
 {
@@ -36,6 +37,26 @@ class AuthController extends Controller
                 'status' => 'error',
                 'message' => 'No Induk atau Password Salah',
             ], 401);
+        }
+    }
+
+    public function loginAs(Request $request) 
+    {
+        try {
+            $user = User::findOrFail(Crypt::decrypt($request->id));
+            auth()->login($user);
+            $request->session()->regenerate();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login Berhasil',
+                'data' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Login Gagal',
+            ]);
         }
     }
     
