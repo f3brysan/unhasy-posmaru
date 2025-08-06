@@ -32,7 +32,8 @@ Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
 });
 
 Route::middleware(['auth:web', 'role:superadmin|baak'])->group(function () {
-    Route::get('daftar-kegiatan', [MsActivityController::class, 'index']);        
+    Route::get('kegiatan', [MsActivityController::class, 'index']);        
+    Route::post('kegiatan/store', [MsActivityController::class, 'store']);        
 });
 
 // Auth
