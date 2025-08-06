@@ -64,7 +64,7 @@ class UserController extends Controller
             // Return a success response
             return response()->json([
                 'status' => 'success',
-                'message' => "Password for {$user->name} successfully reset",
+                'message' => "Password {$user->name} berhasil direset",
             ]);
             
         } catch (\Throwable $th) {

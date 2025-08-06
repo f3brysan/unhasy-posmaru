@@ -87,7 +87,7 @@
                         success: function(response) {
                             Swal.fire({
                                 title: "Sukses!",
-                                text: "Password berhasil direset",
+                                text: response.message,
                                 icon: "success"
                             });
                         }
