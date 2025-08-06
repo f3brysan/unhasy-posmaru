@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MasterActivity;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Validator;
 
 class MsActivityController extends Controller
 {
@@ -36,40 +37,13 @@ class MsActivityController extends Controller
     public function store(Request $request)
     {
         try {
-
-            if ($request->student_report_start > $request->student_report_end) {
+            $validator = $this->validateActivity($request);
+            
+            if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Absensi akhir harus lebih besar dari absensi awal'
-                ], 500);
-            }
-
-            if ($request->registration_start_date > $request->registration_end_date) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pendaftaran akhir harus lebih besar dari pendaftaran awal'
-                ], 500);
-            }
-
-            if ($request->activity_start_date > $request->activity_end_date) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pelaksanaan akhir harus lebih besar dari pelaksanaan awal'
-                ], 500);
-            }
-
-            if (($request->activity_start_date >= $request->registration_start_date) && ($request->activity_start_date <= $request->registration_end_date)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pelaksanaan harus lebih besar dari pendaftaran akhir'
-                ], 500);
-            }
-
-            if (($request->activity_end_date >= $request->registration_start_date) && ($request->activity_end_date <= $request->registration_end_date)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pelaksanaan harus lebih besar dari pendaftaran awal'
-                ], 500);
+                    'message' => $validator->errors()->first()
+                ], 422);
             }
 
             $updateOrCreate = MasterActivity::updateOrCreate(
@@ -103,5 +77,49 @@ class MsActivityController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Validate activity data
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateActivity(Request $request)
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'year' => 'required|integer|min:2000|max:2100',
+            'activity_start_date' => 'required|date',
+            'activity_end_date' => 'required|date|after_or_equal:activity_start_date',
+            'registration_start_date' => 'required|date',
+            'registration_end_date' => 'required|date|after_or_equal:registration_start_date',
+            'student_report_start' => 'required',
+            'student_report_end' => 'required|after_or_equal:student_report_start',
+        ];
+
+        $messages = [
+            'name.required' => 'Nama kegiatan wajib diisi',
+            'year.required' => 'Tahun wajib diisi',
+            'activity_end_date.after_or_equal' => 'Pelaksanaan akhir harus lebih besar dari atau sama dengan pelaksanaan awal',
+            'registration_end_date.after_or_equal' => 'Pendaftaran akhir harus lebih besar dari atau sama dengan pendaftaran awal',
+            'student_report_end.after_or_equal' => 'Absensi akhir harus lebih besar dari atau sama dengan absensi awal',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // Custom validation for date ranges
+        $validator->after(function ($validator) use ($request) {
+            // Check if activity dates don't overlap with registration dates
+            if ($request->activity_start_date <= $request->registration_end_date) {
+                $validator->errors()->add('activity_start_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
+            }
+            
+            if ($request->activity_end_date <= $request->registration_end_date) {
+                $validator->errors()->add('activity_end_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
+            }
+        });
+
+        return $validator;
     }
 }
