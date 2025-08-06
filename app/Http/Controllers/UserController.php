@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('roles')->get(); 
+        $users = User::with('roles')->get();
 
         try {
             if ($request->ajax()) {
                 return datatables()->of($users)
                     ->addColumn('action', function ($row) {
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editUser">Edit</a>';
-                        $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser">Delete</a>';
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Edit" class="edit btn btn-warning btn-sm resetPassword">Reset</a>';
+                        $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser">Delete</a>';
                         return $btn;
                     })
                     ->addColumn('role', function ($row) {
@@ -33,6 +34,41 @@ class UserController extends Controller
             return view('superadmin.master.user.index');
         } catch (\Throwable $th) {
             return $th;
+        }
+    }
+
+    /**
+     * Reset the password for the specified user.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetPassword(Request $request)
+    {
+        try {
+            // Decrypt the user ID from the request
+            $userId = Crypt::decrypt($request->id);
+
+            // Find the user by ID
+            $user = User::findOrFail($userId);
+
+            // Generate a new password using the user's no_induk
+            $newPassword = bcrypt($user->no_induk);
+
+            // Update the user's password
+            $user->update(['password' => $newPassword]);
+
+            // Return a success response
+            return response()->json([
+                'status' => 'success',
+                'message' => "Password for {$user->name} successfully reset",
+            ]);
+        } catch (\Throwable $th) {
+            // Return an error response if an exception occurs
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ]);
         }
     }
 }
