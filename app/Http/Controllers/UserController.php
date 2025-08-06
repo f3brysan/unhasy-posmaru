@@ -48,9 +48,12 @@ class UserController extends Controller
         try {
             // Decrypt the user ID from the request
             $userId = Crypt::decrypt($request->id);
+            $user = User::findOrFail($userId);
 
             // Find the user by ID
             $user = User::findOrFail($userId);
+            $newPassword = bcrypt($user->no_induk);
+            $user->update(['password' => $newPassword]);
 
             // Generate a new password using the user's no_induk
             $newPassword = bcrypt($user->no_induk);
@@ -63,6 +66,7 @@ class UserController extends Controller
                 'status' => 'success',
                 'message' => "Password for {$user->name} successfully reset",
             ]);
+            
         } catch (\Throwable $th) {
             // Return an error response if an exception occurs
             return response()->json([
