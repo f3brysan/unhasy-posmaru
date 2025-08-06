@@ -10,8 +10,8 @@
             </li>
 
             {{-- Start POSMARU --}}
-             <li class="menu-item {{ request()->is('daftar-kegiatan') ? 'active' : '' }}">
-                <a href="{{ URL::to('daftar-kegiatan') }}" class="menu-link">
+             <li class="menu-item {{ request()->is('kegiatan') ? 'active' : '' }}">
+                <a href="{{ URL::to('kegiatan') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-calendar-check"></i>
                     <div data-i18n="Kegiatan">Kegiatan</div>
                 </a>
