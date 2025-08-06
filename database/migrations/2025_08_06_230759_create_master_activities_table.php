@@ -12,19 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('master_activities', function (Blueprint $table) {
-            $table->integer('id')->primary();
+            $table->uuid('id');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->integer('year')->nullable();
             $table->date('registration_start_date')->nullable();
-            $table->date('registration end_date')->nullable();
+            $table->date('registration_end_date')->nullable();
             $table->date('activity_start_date')->nullable();
             $table->date('activity_end_date')->nullable();
-            $table->smallInteger('is_active')->nullable();
+            $table->smallInteger('is_active')->nullable()->default(0);
             $table->time('student_report_start', 6)->nullable();
             $table->time('student_report_end', 6)->nullable();
             $table->timestamps(6);
-            $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
         });
     }
