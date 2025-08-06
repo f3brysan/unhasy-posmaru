@@ -81,19 +81,17 @@
                         type: "POST",
                         url: "{{ URL::to('master/pengguna/reset-password') }}",
                         data: {
-                            id: $(this).data('id'),                            
+                            id: $(this).data('id'),
                         },
                         dataType: "JSON",
-                        success: function (response) {
-                            console.log(response);
-                            
+                        success: function(response) {
+                            Swal.fire({
+                                title: "Sukses!",
+                                text: "Password berhasil direset",
+                                icon: "success"
+                            });
                         }
                     });
-                    // Swal.fire({
-                    //     title: "Deleted!",
-                    //     text: "Your file has been deleted.",
-                    //     icon: "success"
-                    // });
                 }
             });
         });
