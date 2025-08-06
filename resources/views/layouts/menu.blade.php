@@ -2,38 +2,30 @@
     <div class="container-xxl d-flex h-100">
         <ul class="menu-inner">
             <!-- Dashboards -->
-            <li class="menu-item active">
-                <a href="index.html" class="menu-link">
+            <li class="menu-item {{ request()->is('beranda') ? 'active' : '' }}">
+                <a href="{{ URL::to('beranda') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-home"></i>
                     <div data-i18n="Beranda">Beranda</div>
                 </a>
             </li>
 
             {{-- Start POSMARU --}}
-            <li class="menu-item">
-                <a href="javascript:void(0)" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-calendar-bolt"></i>
-                    <div data-i18n="POSMARU">POSMARU</div>
+             <li class="menu-item {{ request()->is('daftar-kegiatan') ? 'active' : '' }}">
+                <a href="{{ URL::to('daftar-kegiatan') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-calendar-check"></i>
+                    <div data-i18n="Kegiatan">Kegiatan</div>
                 </a>
-                <ul class="menu-sub">
-                    <li class="menu-item">
-                        <a href="layouts-without-menu.html" class="menu-link">
-                            <i class="menu-icon tf-icons ti ti-menu-2"></i>
-                            <div data-i18n="Kegiatan">Kegiatan</div>
-                        </a>
-                    </li>
-                </ul>
             </li>
             {{-- End POSMARU --}}
 
             {{-- Master --}}
-            <li class="menu-item">
+            <li class="menu-item {{ request()->is('master*') ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-database"></i>
                     <div data-i18n="Master">Master</div>
                 </a>
                 <ul class="menu-sub">
-                    <li class="menu-item">
+                    <li class="menu-item {{ request()->is('master/pengguna') ? 'active' : '' }}">
                         <a href="{{ URL::to('master/pengguna') }}" class="menu-link">
                             <i class="menu-icon tf-icons ti ti-menu-2"></i>
                             <div data-i18n="Pengguna">Pengguna</div>

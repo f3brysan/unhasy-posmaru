@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SiakaduController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MsActivityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::middleware(['auth:web'])->group(function () {
 Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
     Route::get('master/pengguna', [UserController::class, 'index']);    
     Route::post('master/pengguna/reset-password', [UserController::class, 'resetPassword']);    
+});
+
+Route::middleware(['auth:web', 'role:superadmin|baak'])->group(function () {
+    Route::get('daftar-kegiatan', [MsActivityController::class, 'index']);        
 });
 
 // Auth
