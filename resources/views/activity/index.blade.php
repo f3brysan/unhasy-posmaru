@@ -44,6 +44,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="formKegiatan">
+                    <input type="hidden" name="id" id="id">
                     <div class="modal-body">
                         <div class="form-group mb-2">
                             <label for="name">Nama Kegiatan</label>
@@ -176,10 +177,11 @@
         });
 
         $('#tambahKegiatan').on('click', function() {
+            $('#crudModalLabel').text('Tambah Kegiatan');
+            $('#formKegiatan')[0].reset();
             $('#crudModal').modal('show');
-        });
-
-        // Handle click on change-status button to toggle is_active via AJAX POST, using data-status
+        });        
+        
         $(document).on('click', '.change-status', function() {
             var id = $(this).data('id');
             var status = $(this).data('status');
@@ -222,6 +224,38 @@
                     });
                 }
             });
+        });
+
+        $(document).on('click', '.edit', function() {
+            var id = $(this).data('id');
+        $.ajax({
+            url: "{{ URL::to('kegiatan/edit') }}", 
+            type: "POST",
+            data: {
+                id: id,                                
+            },
+            dataType: "JSON",
+            success: function(response) {
+                var data = response.data;
+                $('#crudModalLabel').text('Edit Kegiatan');
+                $('#formKegiatan')[0].reset();
+                $('#formKegiatan').find('[name="id"]').val(data.id);
+                $('#formKegiatan').find('[name="name"]').val(data.name);
+                $('#formKegiatan').find('[name="year"]').val(data.year);
+                $('#formKegiatan').find('[name="registration_start_date"]').val(data.registration_start_date);
+                $('#formKegiatan').find('[name="registration_end_date"]').val(data.registration_end_date);
+                $('#formKegiatan').find('[name="activity_start_date"]').val(data.activity_start_date);
+                $('#formKegiatan').find('[name="activity_end_date"]').val(data.activity_end_date);
+                $('#formKegiatan').find('[name="student_report_start"]').val(data.student_report_start);
+                $('#formKegiatan').find('[name="student_report_end"]').val(data.student_report_end);
+                $('#formKegiatan').find('[name="id"]').val(data.id);
+                $('#crudModal').modal('show');
+            },
+            error: function(xhr) {
+                var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan';
+                toastr.error(msg, 'Oops!');
+            }
+        });
         });
 
         $("#formKegiatan").on('submit', function(e) {

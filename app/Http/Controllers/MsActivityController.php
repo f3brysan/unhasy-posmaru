@@ -50,7 +50,7 @@ class MsActivityController extends Controller
     {
         try {
             $validator = $this->validateActivity($request);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
@@ -126,7 +126,7 @@ class MsActivityController extends Controller
             if ($request->activity_start_date <= $request->registration_end_date) {
                 $validator->errors()->add('activity_start_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
             }
-            
+
             if ($request->activity_end_date <= $request->registration_end_date) {
                 $validator->errors()->add('activity_end_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
             }
@@ -145,6 +145,23 @@ class MsActivityController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Status berhasil diubah',
+                'data' => $activity
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function edit(Request $request)
+    {
+        try {
+            $activity = MasterActivity::find(Crypt::decrypt($request->id));
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil diambil',
                 'data' => $activity
             ], 200);
         } catch (\Throwable $th) {
