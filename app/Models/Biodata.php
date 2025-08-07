@@ -13,4 +13,14 @@ class Biodata extends Model
     protected $guarded = [
 
     ];
+
+    public function prodi()
+    {
+        return $this->belongsTo(Prodis::class, 'prodi_kode', 'kode_prodi');
+    }
+
+    public function fakultas()
+    {
+        return $this->belongsTo(Prodis::class, 'fakultas_kode', 'kode_fakultas');
+    }
 }
