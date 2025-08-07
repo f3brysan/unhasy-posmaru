@@ -37,6 +37,7 @@ Route::middleware(['auth:web', 'role:superadmin|baak'])->group(function () {
     Route::post('kegiatan/change-status', [MsActivityController::class, 'changeStatus']);        
     Route::post('kegiatan/edit', [MsActivityController::class, 'edit']);        
     Route::post('kegiatan/delete', [MsActivityController::class, 'delete']);        
+    Route::get('kegiatan/show/{id}', [MsActivityController::class, 'show']);        
 });
 
 // Auth

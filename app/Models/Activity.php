@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class MasterActivity extends Model
+class Activity extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $table = 'master_activities';
+    protected $table = 'activities';
 
     public $incrementing = false;
 
     protected $guarded = [];
+
+    public function participants()
+    {
+        return $this->hasMany(ActivityParticipant::class);
+    }
 }

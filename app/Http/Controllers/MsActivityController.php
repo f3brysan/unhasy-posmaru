@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use Illuminate\Http\Request;
-use App\Models\MasterActivity;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,7 +30,7 @@ class MsActivityController extends Controller
     public function index(Request $request)
     {
         // Get all activities from database
-        $activities = MasterActivity::all();
+        $activities = Activity::all();
 
         try {
             // Check if request is AJAX (DataTables request)
@@ -37,21 +38,34 @@ class MsActivityController extends Controller
                 return datatables()->of($activities)
                     // Add action buttons column (Edit, Delete, Status Toggle)
                     ->addColumn('action', function ($row) {
-                        // Edit button with encrypted ID
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Edit" class="mx-auto btn btn-warning btn-sm edit">Edit</a>';
-                        
-                        // Delete button with encrypted ID
-                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Delete" class="mx-auto btn btn-danger btn-sm delete">Delete</a>';
-                        
+                        $btn = '<div class="btn-group" role="group" aria-label="Aksi">';
+                        // Show button with encrypted ID (eye icon)
+                        $btn .= '<a href="'.URL::to('kegiatan/show/'.Crypt::encrypt($row->id)).'" target="_blank" data-toggle="tooltip" title="Lihat" class="btn btn-info btn-sm">
+                                    <i class="ti ti-eye"></i>
+                                </a>';
+                        // Edit button with encrypted ID (pencil icon)
+                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Edit" class="btn btn-warning btn-sm edit">
+                                    <i class="ti ti-pencil"></i>
+                                </a>';
+                        // Delete button with encrypted ID (trash icon)
+                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Delete" class="btn btn-danger btn-sm delete">
+                                    <i class="ti ti-trash"></i>
+                                </a>';
                         // Status toggle button based on current status
                         if ($row->is_active == 1) {
-                            // If active, show "Non Aktifkan" (Deactivate) button
-                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-status="0" data-original-title="Non Aktifkan" class="mx-auto btn btn-success btn-sm change-status">Non Aktifkan</a>';
+                            // If active, show "Non Aktifkan" (Deactivate) button (toggle-left icon)
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="0" title="Non Aktifkan" class="btn btn-success btn-sm change-status">
+                                        <i class="ti ti-toggle-right"></i>
+                                    </a>';
                         } else {
-                            // If inactive, show "Aktifkan" (Activate) button
-                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-status="1" data-original-title="Aktifkan" class="mx-auto btn btn-secondary btn-sm change-status">Aktifkan</a>';
+                            // If inactive, show "Aktifkan" (Activate) button (toggle-right icon)
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="1" title="Aktifkan" class="btn btn-secondary btn-sm change-status">
+                                        <i class="ti ti-toggle-left"></i>
+                                    </a>';
                         }
-                        return $btn;
+                        $btn .= '</div>';
+
+                        return $btn;                        
                     })
                     // Add participant count column (hardcoded to 99 for now)
                     ->addColumn('peserta', function ($row) {
@@ -101,7 +115,7 @@ class MsActivityController extends Controller
             }
 
             // Create new activity or update existing one based on ID
-            $updateOrCreate = MasterActivity::updateOrCreate(
+            $updateOrCreate = Activity::updateOrCreate(
                 [
                     'id' => $request->id  // Search condition
                 ],
@@ -194,7 +208,7 @@ class MsActivityController extends Controller
     {
         try {
             // Find activity by decrypted ID
-            $activity = MasterActivity::find(Crypt::decrypt($request->id));
+            $activity = Activity::find(Crypt::decrypt($request->id));
             
             // Update the status
             $activity->is_active = $request->status;
@@ -225,7 +239,7 @@ class MsActivityController extends Controller
     {
         try {
             // Find activity by decrypted ID
-            $activity = MasterActivity::find(Crypt::decrypt($request->id));
+            $activity = Activity::find(Crypt::decrypt($request->id));
             
             // Return activity data for editing
             return response()->json([
@@ -252,7 +266,7 @@ class MsActivityController extends Controller
     {
         try {
             // Find activity by decrypted ID
-            $activity = MasterActivity::find(Crypt::decrypt($request->id));
+            $activity = Activity::find(Crypt::decrypt($request->id));
             
             // Delete the activity
             $activity->delete();
@@ -269,5 +283,12 @@ class MsActivityController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+
+    public function show(Request $request)
+    {
+        $activity = Activity::with('participants')->find(Crypt::decrypt($request->id));
+        
+        return view('activity.show', compact('activity'));
     }
 }
