@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Biodata;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\ActivityParticipant;
 use Illuminate\Support\Facades\Crypt;
 
 class AuthController extends Controller
@@ -118,7 +120,16 @@ class AuthController extends Controller
                 'chart_size' => $request->ukuran_kaos,
                 'hp' => $request->nomor_hp
             ]);
+            
+            $checkActivity = Activity::where('is_active', 1)->first();
 
+            if ($checkActivity) {
+                $insertActivityParticipant = ActivityParticipant::create([
+                    'user_id' => $idUser,
+                    'activity_id' => $checkActivity->id
+                ]);
+            }
+            
             $insertUser->assignRole('mahasiswa');
 
             // Commit the transaction
