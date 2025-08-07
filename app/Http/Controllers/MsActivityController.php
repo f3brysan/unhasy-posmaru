@@ -287,7 +287,7 @@ class MsActivityController extends Controller
 
     public function show(Request $request)
     {
-        $activity = Activity::with('participants')->find(Crypt::decrypt($request->id));
+        $activity = Activity::find(Crypt::decrypt($request->id));
         
         return view('activity.show', compact('activity'));
     }

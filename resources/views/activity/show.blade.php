@@ -69,8 +69,143 @@
                         Data kegiatan tidak ditemukan.
                     </div>
                 @endif
-                <a href="{{ url('kegiatan') }}" class="btn btn-secondary mt-3">Kembali</a>
             </div>
         </div>
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Daftar Peserta</h5>
+                <button class="btn btn-primary" id="btnAddParticipant" data-activity-id="{{ $activity->id ?? '' }}">Tambah
+                    Peserta</button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="participantsTable">
+                        <thead>
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Prodi/Fakultas</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal Add Participant --}}
+        <div class="modal fade" id="addParticipantModal" tabindex="-1" aria-labelledby="addParticipantModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="formAddParticipant">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addParticipantModalLabel">Tambah Peserta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="activity_id" value="{{ $activity->id ?? '' }}">
+                            <div class="mb-3">
+                                <label for="participant_nim" class="form-label">NIM</label>
+                                <input type="text" class="form-control" id="participant_nim" name="nim" required>
+                            </div>
+                            {{-- Optionally, you can add autocomplete or search for user by NIM --}}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Tambah</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @push('js')
+            <script>
+                $(document).ready(function() {
+                    $('#participantsTable').DataTable({
+                        scrollX: true,
+                        responsive: true,
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
+                            type: 'GET'
+                        },
+                        columns: [{
+                                data: 'nim',
+                                name: 'nim'
+                            },
+                            {
+                                data: 'name',
+                                name: 'name'
+                            },
+                            {
+                                data: 'faculty',
+                                name: 'faculty'
+                            },
+                            {
+                                data: 'action',
+                                name: 'action'
+                            }
+                        ]
+                    });
+
+                    $('#btnAddParticipant').on('click', function() {
+                        $('#addParticipantModal').modal('show');
+                    });
+
+                    $('#formAddParticipant').on('submit', function(e) {
+                        e.preventDefault();
+                        var form = $(this);
+                        var data = form.serialize();
+                        $.ajax({
+                            url: "{{ url('kegiatan/add-participant') }}",
+                            method: "POST",
+                            data: data,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            success: function(res) {
+                                if (res.success) {
+                                    location.reload();
+                                } else {
+                                    alert(res.message || 'Gagal menambah peserta');
+                                }
+                            },
+                            error: function() {
+                                alert('Terjadi kesalahan.');
+                            }
+                        });
+                    });
+
+                    $('.btnDeleteParticipant').on('click', function() {
+                        if (confirm('Yakin ingin menghapus peserta ini?')) {
+                            var id = $(this).data('id');
+                            $.ajax({
+                                url: "{{ url('kegiatan/delete-participant') }}",
+                                method: "POST",
+                                data: {
+                                    id: id,
+                                    _token: '{{ csrf_token() }}'
+                                },
+                                success: function(res) {
+                                    if (res.success) {
+                                        location.reload();
+                                    } else {
+                                        alert(res.message || 'Gagal menghapus peserta');
+                                    }
+                                },
+                                error: function() {
+                                    alert('Terjadi kesalahan.');
+                                }
+                            });
+                        }
+                    });
+                });
+            </script>
+        @endpush
     </div>
 @endsection
