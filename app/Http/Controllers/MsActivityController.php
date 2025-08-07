@@ -171,4 +171,21 @@ class MsActivityController extends Controller
             ], 500);
         }
     }
+
+    public function delete(Request $request)
+    {
+        try {
+            $activity = MasterActivity::find(Crypt::decrypt($request->id));
+            $activity->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil dihapus'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }

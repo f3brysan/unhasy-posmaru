@@ -180,8 +180,8 @@
             $('#crudModalLabel').text('Tambah Kegiatan');
             $('#formKegiatan')[0].reset();
             $('#crudModal').modal('show');
-        });        
-        
+        });
+
         $(document).on('click', '.change-status', function() {
             var id = $(this).data('id');
             var status = $(this).data('status');
@@ -228,34 +228,73 @@
 
         $(document).on('click', '.edit', function() {
             var id = $(this).data('id');
-        $.ajax({
-            url: "{{ URL::to('kegiatan/edit') }}", 
-            type: "POST",
-            data: {
-                id: id,                                
-            },
-            dataType: "JSON",
-            success: function(response) {
-                var data = response.data;
-                $('#crudModalLabel').text('Edit Kegiatan');
-                $('#formKegiatan')[0].reset();
-                $('#formKegiatan').find('[name="id"]').val(data.id);
-                $('#formKegiatan').find('[name="name"]').val(data.name);
-                $('#formKegiatan').find('[name="year"]').val(data.year);
-                $('#formKegiatan').find('[name="registration_start_date"]').val(data.registration_start_date);
-                $('#formKegiatan').find('[name="registration_end_date"]').val(data.registration_end_date);
-                $('#formKegiatan').find('[name="activity_start_date"]').val(data.activity_start_date);
-                $('#formKegiatan').find('[name="activity_end_date"]').val(data.activity_end_date);
-                $('#formKegiatan').find('[name="student_report_start"]').val(data.student_report_start);
-                $('#formKegiatan').find('[name="student_report_end"]').val(data.student_report_end);
-                $('#formKegiatan').find('[name="id"]').val(data.id);
-                $('#crudModal').modal('show');
-            },
-            error: function(xhr) {
-                var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan';
-                toastr.error(msg, 'Oops!');
-            }
+            $.ajax({
+                url: "{{ URL::to('kegiatan/edit') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                },
+                dataType: "JSON",
+                success: function(response) {
+                    var data = response.data;
+                    $('#crudModalLabel').text('Edit Kegiatan');
+                    $('#formKegiatan')[0].reset();
+                    $('#formKegiatan').find('[name="id"]').val(data.id);
+                    $('#formKegiatan').find('[name="name"]').val(data.name);
+                    $('#formKegiatan').find('[name="year"]').val(data.year);
+                    $('#formKegiatan').find('[name="registration_start_date"]').val(data
+                        .registration_start_date);
+                    $('#formKegiatan').find('[name="registration_end_date"]').val(data
+                        .registration_end_date);
+                    $('#formKegiatan').find('[name="activity_start_date"]').val(data
+                        .activity_start_date);
+                    $('#formKegiatan').find('[name="activity_end_date"]').val(data.activity_end_date);
+                    $('#formKegiatan').find('[name="student_report_start"]').val(data
+                        .student_report_start);
+                    $('#formKegiatan').find('[name="student_report_end"]').val(data.student_report_end);
+                    $('#formKegiatan').find('[name="id"]').val(data.id);
+                    $('#crudModal').modal('show');
+                },
+                error: function(xhr) {
+                    var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message :
+                        'Terjadi kesalahan';
+                    toastr.error(msg, 'Oops!');
+                }
+            });
         });
+
+        $(document).on('click', '.delete', function() {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda akan menghapus kegiatan ini.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Lanjutkan eksekusi AJAX di bawah 
+                    $.ajax({
+                        url: "{{ URL::to('kegiatan/delete') }}",
+                        type: "POST",
+                        data: {
+                            id: id
+                        },
+                        success: function(response) {
+                            $('#myTable').DataTable().ajax.reload(null, false);
+                            toastr.success(response.message, 'Success!');
+                        },
+                        error: function(xhr) {
+                            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr
+                                .responseJSON.message : 'Terjadi kesalahan';
+                            toastr.error(msg, 'Oops!');
+                        }
+                    });
+                }
+            });
         });
 
         $("#formKegiatan").on('submit', function(e) {
