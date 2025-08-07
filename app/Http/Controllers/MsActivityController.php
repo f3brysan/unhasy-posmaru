@@ -19,12 +19,24 @@ class MsActivityController extends Controller
                     ->addColumn('action', function ($row) {
                         $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Edit" class="mx-auto btn btn-warning btn-sm edit">Edit</a>';
                         $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-original-title="Delete" class="mx-auto btn btn-danger btn-sm delete">Delete</a>';
+                        if ($row->is_active == 1) {
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-status="0" data-original-title="Non Aktifkan" class="mx-auto btn btn-success btn-sm change-status">Non Aktifkan</a>';
+                        } else {
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.Crypt::encrypt($row->id).'" data-status="1" data-original-title="Aktifkan" class="mx-auto btn btn-secondary btn-sm change-status">Aktifkan</a>';
+                        }
                         return $btn;
                     })
                     ->addColumn('peserta', function ($row) {
                         return 99;
                     })
-                    ->rawColumns(['action', 'peserta'])
+                    ->addColumn('status_btn', function ($row) {
+                        if ($row->is_active == 1) {
+                            return '<span class="badge bg-success">Aktif</span>';
+                        } else {
+                            return '<span class="badge bg-secondary">Non Aktif</span>';
+                        }
+                    })
+                    ->rawColumns(['action', 'peserta', 'status_btn'])
                     ->make(true);
             }
 
@@ -121,5 +133,25 @@ class MsActivityController extends Controller
         });
 
         return $validator;
+    }
+
+    public function changeStatus(Request $request)
+    {
+        try {
+            $activity = MasterActivity::find(Crypt::decrypt($request->id));
+            $activity->is_active = $request->status;
+            $activity->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Status berhasil diubah',
+                'data' => $activity
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }

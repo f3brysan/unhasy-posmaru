@@ -25,6 +25,7 @@
                             <th>Nama Kegiatan</th>
                             <th>Tahun</th>
                             <th>Peserta</th>
+                            <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -155,6 +156,13 @@
 
                 },
                 {
+                    data: 'status_btn',
+                    name: 'status_btn',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                },
+                {
                     data: 'action',
                     name: 'action',
                     orderable: false,
@@ -171,7 +179,52 @@
             $('#crudModal').modal('show');
         });
 
-        $("#formKegiatan").on('submit', function (e) {
+        // Handle click on change-status button to toggle is_active via AJAX POST, using data-status
+        $(document).on('click', '.change-status', function() {
+            var id = $(this).data('id');
+            var status = $(this).data('status');
+            var $btn = $(this);
+
+            if (status == 0) {
+                var text = "Anda akan mengubah status kegiatan ini menjadi non aktif.";
+            } else {
+                var text = "Anda akan mengubah status kegiatan ini menjadi aktif.";
+            }
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Ubah!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Lanjutkan eksekusi AJAX di bawah
+                    $.ajax({
+                        url: "{{ URL::to('kegiatan/change-status') }}",
+                        type: "POST",
+                        data: {
+                            id: id,
+                            status: status
+                        },
+                        success: function(response) {
+                            $('#myTable').DataTable().ajax.reload(null, false);
+                            toastr.success(response.message, 'Success!');
+                        },
+                        error: function(xhr) {
+                            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr
+                                .responseJSON.message : 'Terjadi kesalahan';
+                            toastr.error(msg, 'Oops!');
+                        }
+                    });
+                }
+            });
+        });
+
+        $("#formKegiatan").on('submit', function(e) {
             e.preventDefault();
             var formData = $(this).serialize();
 
@@ -183,10 +236,16 @@
                 url: "{{ URL::to('kegiatan/store') }}",
                 data: formData,
                 dataType: "JSON",
-                success: function (response) {
-                    console.log(response);                                        
+                success: function(response) {
+                    console.log(response);
+                    toastr.success(response.message, 'Success!');
+                    $('#crudModal').modal('hide');
+                    $('#btnSubmit').html('Save Changes');
+                    $('#btnSubmit').attr('disabled', false);
+                    $('#formKegiatan')[0].reset();
+                    $('#myTable').DataTable().ajax.reload();
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.log(xhr.responseJSON.message);
                     toastr.error(xhr.responseJSON.message, 'Oops!');
                     $('#btnSubmit').html('Save Changes');
