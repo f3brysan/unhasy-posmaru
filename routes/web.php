@@ -29,6 +29,8 @@ Route::middleware(['auth:web'])->group(function () {
 
 Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
     Route::get('master/pengguna', [UserController::class, 'index']);    
+    Route::post('master/pengguna/store', [UserController::class, 'store']);    
+    Route::post('master/pengguna/edit', [UserController::class, 'edit']);    
     Route::post('master/pengguna/reset-password', [UserController::class, 'resetPassword']);    
 });
 
