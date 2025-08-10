@@ -18,7 +18,7 @@ class ActivityParticipant extends Model
 
     public function activity()
     {
-        return $this->belongsTo(MasterActivity::class, 'activity_id');
+        return $this->belongsTo(Activity::class, 'activity_id');
     }
 
     public function user()

@@ -31,6 +31,7 @@ Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
     Route::get('master/pengguna', [UserController::class, 'index']);    
     Route::post('master/pengguna/store', [UserController::class, 'store']);    
     Route::post('master/pengguna/edit', [UserController::class, 'edit']);    
+    Route::post('master/pengguna/get-participant', [UserController::class, 'getParticipant']);    
     Route::post('master/pengguna/reset-password', [UserController::class, 'resetPassword']);    
 });
 
@@ -41,7 +42,8 @@ Route::middleware(['auth:web', 'role:superadmin|baak'])->group(function () {
     Route::post('kegiatan/edit', [MsActivityController::class, 'edit']);        
     Route::post('kegiatan/delete', [MsActivityController::class, 'delete']);        
     Route::get('kegiatan/show/{id}', [MsActivityController::class, 'show']);    
-    Route::get('kegiatan/participants/{id}', [ParticipantController::class, 'getParticipants']);    
+    Route::get('kegiatan/participants/{id}', [ParticipantController::class, 'getParticipants']);   
+    Route::post('kegiatan/add-participant', [ParticipantController::class, 'addParticipant']);   
 });
 
 // Auth
