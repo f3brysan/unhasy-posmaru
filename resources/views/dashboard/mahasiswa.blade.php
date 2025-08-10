@@ -89,7 +89,7 @@
                         </div>
                         <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $dayCount - $dayNow }} Laporan Kegiatan lagi
                         </div>
-                        <div><a href="{{ URL::to('activity-report/' . Crypt::encrypt($myActivities->activity_id)) }}"
+                        <div><a href="{{ URL::to('aktivitas/' . Crypt::encrypt($myActivities->activity_id)) }}"
                                 target="_blank" class="text-white d-flex align-items-center text-decoration-none">Lihat
                                 Laporan
                                 <i class="fa fa-chevron-right ms-2 text-white text-opacity-50"></i></a></div>
