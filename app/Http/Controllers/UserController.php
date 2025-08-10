@@ -169,4 +169,27 @@ class UserController extends Controller
             ], 400);
         }
     }
+
+    public function getParticipant(Request $request)
+    {
+        try {
+            $participant = User::where('no_induk', $request->nim)->first();
+            if (!$participant) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Mahasiswa tidak ditemukan',
+                ], 400);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Berhasil mengambil data mahasiswa',
+                'data' => $participant,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
 }
