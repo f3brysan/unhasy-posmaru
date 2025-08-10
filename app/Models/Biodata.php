@@ -23,4 +23,9 @@ class Biodata extends Model
     {
         return $this->belongsTo(Prodis::class, 'fakultas_kode', 'kode_fakultas');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id', 'id');
+    }
 }
