@@ -94,128 +94,129 @@
                 </div>
             </div>
         </div>
-
-        {{-- Modal Add Participant --}}
-        <div class="modal fade" id="addParticipantModal" tabindex="-1" aria-labelledby="addParticipantModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addParticipantModalLabel">Tambah Peserta</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                    </div>
-                    <form id="formAddParticipant">                        
-                        <div class="modal-body">
-                            <input type="hidden" name="activity_id" value="{{ Crypt::encrypt($activity->id) }}">
-                            <div class="mb-3">
-                                <label for="participant_nim" class="form-label">NIM</label>
-                                <input type="text" class="form-control" id="participant_nim" name="nim" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="participant_name" class="form-label">Nama</label>
-                                <input type="text" class="form-control" id="participant_name" name="name" readonly>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Tambah</button>
-                        </div>
-                    </form>
+    </div>
+    {{-- Modal Add Participant --}}
+    <div class="modal fade" id="addParticipantModal" tabindex="-1" aria-labelledby="addParticipantModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addParticipantModalLabel">Tambah Peserta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
+                <form id="formAddParticipant">
+                    <div class="modal-body">
+                        <input type="hidden" name="activity_id" value="{{ Crypt::encrypt($activity->id) }}">
+                        <div class="mb-3">
+                            <label for="participant_nim" class="form-label">NIM</label>
+                            <input type="text" class="form-control" id="participant_nim" name="nim" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="participant_name" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="participant_name" name="name" readonly>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Tambah</button>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            @push('js')
-                <script>
-                    $(document).ready(function() {
-                        $('#participantsTable').DataTable({
-                            scrollX: true,
-                            responsive: true,
-                            processing: true,
-                            serverSide: true,
-                            ajax: {
-                                url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
-                                type: 'GET'
+        @push('js')
+            <script>
+                $(document).ready(function() {
+                    $('#participantsTable').DataTable({
+                        scrollX: true,
+                        responsive: true,
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
+                            type: 'GET'
+                        },
+                        columns: [{
+                                data: 'nim',
+                                name: 'nim',
+                                className: 'text-center'
                             },
-                            columns: [{
-                                    data: 'nim',
-                                    name: 'nim',
-                                    className: 'text-center'
-                                },
-                                {
-                                    data: 'name',
-                                    name: 'name'
-                                },
-                                {
-                                    data: 'faculty',
-                                    name: 'faculty',
-                                    className: 'text-center'
-                                },
-                                {
-                                    data: 'action',
-                                    name: 'action',
-                                    className: 'text-center'
-                                }
-                            ]
-                        });
+                            {
+                                data: 'name',
+                                name: 'name'
+                            },
+                            {
+                                data: 'faculty',
+                                name: 'faculty',
+                                className: 'text-center'
+                            },
+                            {
+                                data: 'action',
+                                name: 'action',
+                                className: 'text-center'
+                            }
+                        ]
+                    });
 
-                        $('#btnAddParticipant').on('click', function() {
-                            $('#addParticipantModal').modal('show');
-                        });
+                    $('#btnAddParticipant').on('click', function() {
+                        $('#addParticipantModal').modal('show');
+                    });
 
-                        $('#formAddParticipant').on('submit', function(e) {
-                            e.preventDefault();
-                            var form = $(this);
-                            var data = form.serialize();
+                    $('#formAddParticipant').on('submit', function(e) {
+                        e.preventDefault();
+                        var form = $(this);
+                        var data = form.serialize();
+                        $.ajax({
+                            url: "{{ url('kegiatan/add-participant') }}",
+                            method: "POST",
+                            data: data,
+                            dataType: "JSON",
+                            success: function(res) {
+                                console.log(res);
+                            },
+                            error: function(xhr, status, error) {
+                                console.log(xhr.responseJSON);
+                                toastr.error(xhr.responseJSON.message);
+                            }
+                        });
+                    });
+
+
+                    $('#participant_nim').on('keyup', function() {
+                        var nim = $(this).val();
+                        $('#participant_name').val('');
+
+                        // Clear previous timeout if it exists
+                        if (typeof this.delayTimer !== 'undefined') {
+                            clearTimeout(this.delayTimer);
+                        }
+
+                        // Set new timeout
+                        this.delayTimer = setTimeout(() => {
                             $.ajax({
-                                url: "{{ url('kegiatan/add-participant') }}",
+                                url: "{{ url('master/pengguna/get-participant') }}",
                                 method: "POST",
-                                data: data,
+                                data: {
+                                    nim: nim
+                                },
                                 dataType: "JSON",
                                 success: function(res) {
-                                    console.log(res);
+                                    if (res.status == 'success') {
+                                        $('#participant_name').val(res.data.name);
+                                    }
                                 },
                                 error: function(xhr, status, error) {
                                     console.log(xhr.responseJSON);
+                                    $('#participant_name').val('');
                                     toastr.error(xhr.responseJSON.message);
                                 }
                             });
-                        });
-                        
-
-                        $('#participant_nim').on('keyup', function() {
-                            var nim = $(this).val();
-                            $('#participant_name').val('');
-
-                            // Clear previous timeout if it exists
-                            if (typeof this.delayTimer !== 'undefined') {
-                                clearTimeout(this.delayTimer);
-                            }
-
-                            // Set new timeout
-                            this.delayTimer = setTimeout(() => {
-                                $.ajax({
-                                    url: "{{ url('master/pengguna/get-participant') }}",
-                                    method: "POST",
-                                    data: {
-                                        nim: nim
-                                    },
-                                    dataType: "JSON",
-                                    success: function(res) {
-                                        if (res.status == 'success') {
-                                            $('#participant_name').val(res.data.name);
-                                        }
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.log(xhr.responseJSON);
-                                        $('#participant_name').val('');
-                                        toastr.error(xhr.responseJSON.message);
-                                    }
-                                });
-                            }, 1000);
-                        });
-
+                        }, 1000);
                     });
-                </script>
-            @endpush
-        </div>
-    @endsection
+
+                });
+            </script>
+        @endpush
+    </div>
+    {{-- End Modal Add Participant --}}
+@endsection
