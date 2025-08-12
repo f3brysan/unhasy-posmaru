@@ -2,95 +2,203 @@
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">Detail Kegiatan</h4>
-            </div>
-            <div class="card-body">
-                @if ($activity)
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Nama Kegiatan:</strong>
-                            <div>{{ $activity->name }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Tahun:</strong>
-                            <div>{{ $activity->year }}</div>
-                        </div>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Detail Kegiatan</h4>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Tanggal Mulai Kegiatan:</strong>
-                            <div>{{ \Carbon\Carbon::parse($activity->activity_start_date)->format('d F Y') }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Tanggal Selesai Kegiatan:</strong>
-                            <div>{{ \Carbon\Carbon::parse($activity->activity_end_date)->format('d F Y') }}</div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Batas Awal Pendaftaran:</strong>
-                            <div>{{ \Carbon\Carbon::parse($activity->registration_start_date)->format('d F Y') }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Batas Akhir Pendaftaran:</strong>
-                            <div>{{ \Carbon\Carbon::parse($activity->registration_end_date)->format('d F Y') }}</div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Batas Awal Absensi:</strong>
-                            <div>{{ $activity->student_report_start }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Batas Akhir Absensi:</strong>
-                            <div>{{ $activity->student_report_end }}</div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Status:</strong>
-                            <div>
-                                @if ($activity->is_active)
-                                    <span class="badge bg-success">Aktif</span>
-                                @else
-                                    <span class="badge bg-secondary">Non Aktif</span>
-                                @endif
+                    <div class="card-body">
+                        @if ($activity)
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Nama Kegiatan:</strong>
+                                    <div>{{ $activity->name }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Tahun:</strong>
+                                    <div>{{ $activity->year }}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Diupdate Oleh:</strong>
-                            <div>{{ $activity->updated_by ?? '-' }}</div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Tanggal Mulai Kegiatan:</strong>
+                                    <div>{{ \Carbon\Carbon::parse($activity->activity_start_date)->format('d F Y') }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Tanggal Selesai Kegiatan:</strong>
+                                    <div>{{ \Carbon\Carbon::parse($activity->activity_end_date)->format('d F Y') }}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Batas Awal Pendaftaran:</strong>
+                                    <div>{{ \Carbon\Carbon::parse($activity->registration_start_date)->format('d F Y') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Batas Akhir Pendaftaran:</strong>
+                                    <div>{{ \Carbon\Carbon::parse($activity->registration_end_date)->format('d F Y') }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Batas Awal Absensi:</strong>
+                                    <div>{{ $activity->student_report_start }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Batas Akhir Absensi:</strong>
+                                    <div>{{ $activity->student_report_end }}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Status:</strong>
+                                    <div>
+                                        @if ($activity->is_active)
+                                            <span class="badge bg-success">Aktif</span>
+                                        @else
+                                            <span class="badge bg-secondary">Non Aktif</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Diupdate Oleh:</strong>
+                                    <div>{{ $activity->updated_by ?? '-' }}</div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-warning">
+                                Data kegiatan tidak ditemukan.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Daftar Peserta</h4>
+                        <button class="btn btn-primary" id="btnAddParticipant"
+                            data-activity-id="{{ $activity->id ?? '' }}">Tambah
+                            Peserta</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="participantsTable">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">NIM</th>
+                                        <th class="text-center">Nama</th>
+                                        <th class="text-center">Prodi/Fakultas</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                @else
-                    <div class="alert alert-warning">
-                        Data kegiatan tidak ditemukan.
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
-        <div class="card mt-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Daftar Peserta</h5>
-                <button class="btn btn-primary" id="btnAddParticipant" data-activity-id="{{ $activity->id ?? '' }}">Tambah
-                    Peserta</button>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="participantsTable">
-                        <thead>
-                            <tr>
-                                <th class="text-center">NIM</th>
-                                <th class="text-center">Nama</th>
-                                <th class="text-center">Prodi/Fakultas</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Laporan Kegiatan</h4>
+                    </div>
+                    @php
+                        // Ambil tanggal mulai dan akhir event
+                        $startDate = \Carbon\Carbon::parse($activity->activity_start_date ?? null);
+                        $endDate = \Carbon\Carbon::parse($activity->activity_end_date ?? null);
+
+                        $dates = [];
+                        if ($startDate && $endDate && $startDate->lte($endDate)) {
+                            for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+                                $dates[] = $date->format('Y-m-d');
+                            }
+                        }
+                    @endphp
+
+                    <div class="card-body">
+                        @if (count($dates))
+                            @php
+                                $currentDate = now()->format('Y-m-d');
+                                $activeIndex = array_search($currentDate, $dates);
+                                if ($activeIndex === false) {
+                                    $activeIndex = 0; // Default to first tab if current date not found
+                                }
+                            @endphp
+                            <ul class="nav nav-tabs" id="reportDateTabs" role="tablist">
+                                @foreach ($dates as $i => $date)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link @if ($i == $activeIndex) active @endif"
+                                            id="tab-{{ $date }}" data-bs-toggle="tab"
+                                            data-bs-target="#tab-pane-{{ $date }}" type="button" role="tab"
+                                            aria-controls="tab-pane-{{ $date }}"
+                                            aria-selected="{{ $i == $activeIndex ? 'true' : 'false' }}">
+                                            {{ \Carbon\Carbon::parse($date)->format('d M Y') }}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <div class="tab-content mt-3" id="reportDateTabsContent">
+                                @foreach ($dates as $i => $date)
+                                    <div class="tab-pane fade @if ($i == $activeIndex) show active @endif"
+                                        id="tab-pane-{{ $date }}" role="tabpanel"
+                                        aria-labelledby="tab-{{ $date }}">
+                                        {{-- Konten laporan untuk tanggal {{ $date }} --}}
+
+                                        @if (!empty($reports[$date]))
+                                            <table class="table table-bordered table-striped data-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">NIM</th>
+                                                        <th class="text-center">Nama</th>
+                                                        <th class="text-center">Prodi/Fakultas</th>
+                                                        <th class="text-center">Bukti Kehadiran</th>
+                                                        <th class="text-center">Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($reports[$date] as $report)
+                                                        <tr>
+                                                            <td class="text-center">{{ $report->user->no_induk }}</td>
+                                                            <td>{{ $report->user->name }}</td>
+                                                            <td class="text-center">{{ $report->user->biodata->prodi->prodi }}
+                                                            <br>
+                                                            Fakultas{{ $report->user->biodata->fakultas->fakultas }}
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <a href="{{ asset($report->picture) }}" target="_blank" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i>&nbsp;Lihat</a>
+                                                                <p class="small mt-2">{{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}</p>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <a href="javascript:void(0)" class="btn btn-sm btn-primary">Edit</a>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        @else
+                                            <div class="alert alert-warning text-center">
+                                               <i class="fa fa-exclamation-triangle"></i> Belum ada data untuk ditampilkan pada tanggal
+                                                <strong>{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</strong>.
+                                            </div>
+                                        @endif
+
+                                        {{-- Anda bisa menampilkan data laporan per tanggal di sini --}}
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="alert alert-warning mb-0">
+                                Tanggal kegiatan tidak tersedia.
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,9 +232,16 @@
             </div>
         </div>
 
-        @push('js')
+        
+    </div>
+    {{-- End Modal Add Participant --}}
+@endsection
+@push('js')
             <script>
                 $(document).ready(function() {
+                    $('.data-table').DataTable({
+                        responsive: true,
+                });
                     $('#participantsTable').DataTable({
                         scrollX: true,
                         responsive: true,
@@ -217,6 +332,3 @@
                 });
             </script>
         @endpush
-    </div>
-    {{-- End Modal Add Participant --}}
-@endsection

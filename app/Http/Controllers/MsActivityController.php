@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use Illuminate\Http\Request;
+use App\Models\ActivityReport;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
@@ -288,7 +289,20 @@ class MsActivityController extends Controller
     public function show(Request $request)
     {
         $activity = Activity::find(Crypt::decrypt($request->id));
+
+        $reports = [];
+        if ($activity->activity_start_date && $activity->activity_end_date && $activity->activity_start_date <= $activity->activity_end_date) {
+            for ($date = $activity->activity_start_date; $date <= $activity->activity_end_date; $date++) {
+                $reports[$date] = [];
+            }
+        }        
+
+        $activityReports = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)->get();
         
-        return view('activity.show', compact('activity'));
+        foreach ($activityReports as $report) {
+            $reports[$report->tgl_setor][] = $report;
+        }        
+
+        return view('activity.show', compact('activity', 'reports'));
     }
 }
