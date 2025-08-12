@@ -91,7 +91,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Tanggal</th>
-                                <th>Kegiatan</th>
+                                <th>Deskripsi Kegiatan</th>
                                 <th>File</th>
                                 <th>Aksi</th>
                             </tr>
