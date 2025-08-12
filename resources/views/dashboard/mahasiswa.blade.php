@@ -75,7 +75,7 @@
                         <h6 class="text-white mt-n1">
                             {{ Carbon\Carbon::parse($myActivities->activity->activity_start_date)->format('d M Y') }} -
                             {{ Carbon\Carbon::parse($myActivities->activity->activity_end_date)->format('d M Y') }}</h6>
-                        <div class="progress bg-black bg-opacity-50 mb-2" style="height: 6px">
+                        <div class="progress bg-white bg-opacity-50 mb-2" style="height: 15px">
                             @php
                                 $start = Carbon\Carbon::parse($myActivities->activity->activity_start_date);
                                 $now = Carbon\Carbon::now();
@@ -84,10 +84,10 @@
                                 $dayNow = $now->diffInDays($start) + 1;
                                 $progress = $dayNow / $dayCount * 100;
                             @endphp
-                            <div class="progrss-bar progress-bar-striped bg-white" style="width: {{ $progress }}%">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: {{ $progress }}%">{{ $dayCount - $dayNow }} Hari lagi
                             </div>
                         </div>
-                        <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $dayCount - $dayNow }} Laporan Kegiatan lagi
+                        <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $myReports->count() }} Laporan selesai
                         </div>
                         <div><a href="{{ URL::to('aktivitas/' . Crypt::encrypt($myActivities->activity_id)) }}"
                                 target="_blank" class="text-white d-flex align-items-center text-decoration-none">Lihat

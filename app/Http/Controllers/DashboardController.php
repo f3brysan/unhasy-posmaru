@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Biodata;
 use App\Models\Activity;
 use Illuminate\Http\Request;
+use App\Models\ActivityReport;
 use App\Models\ActivityParticipant;
 
 class DashboardController extends Controller
@@ -38,9 +39,10 @@ class DashboardController extends Controller
     {
         $myActivities = ActivityParticipant::with('activity')->where('user_id', auth()->user()->id)->first();
         $activities = Activity::where('is_active', 1)->get();
+        $myReports = ActivityReport::where('user_id', auth()->user()->id)->get();
         
         $biodata = Biodata::with('prodi', 'fakultas', 'user')->where('id', auth()->user()->id)->first();        
         
-        return view('dashboard.mahasiswa', compact('myActivities', 'activities', 'biodata'));
+        return view('dashboard.mahasiswa', compact('myActivities', 'activities', 'biodata', 'myReports'));
     }
 }
