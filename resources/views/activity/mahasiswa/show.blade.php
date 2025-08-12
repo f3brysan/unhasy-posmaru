@@ -80,7 +80,7 @@
                 <h4 class="mb-0">Laporan Kegiatan</h4>
                 @if (date('Y-m-d H:i:s') >= $time['start'] && date('Y-m-d H:i:s') <= $time['end'])
                     <div class="d-flex justify-content-end">
-                        <button class="btn btn-primary" id="btnAddActivityReport">Tambah Laporan</button>
+                        <button class="btn btn-primary btn-sm" id="btnAddActivityReport">Tambah Laporan</button>
                     </div>
                 @endif
             </div>
@@ -88,8 +88,7 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="activityReportTable">
                         <thead>
-                            <tr>
-                                <th>No</th>
+                            <tr>                                
                                 <th>Tanggal</th>
                                 <th>Deskripsi Kegiatan</th>
                                 <th>File</th>
@@ -129,6 +128,13 @@
                             <label for="file">File</label>
                             <input type="file" class="form-control" id="file" name="file" accept="image/*">
                         </div>
+                        <div class="form-group mb-3">
+                            <label>Preview</label>
+                            <div>
+                                <img id="filePreview" src="#" alt="Preview"
+                                    style="max-width: 100%; max-height: 200px; display: none;" />
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -143,14 +149,11 @@
 @push('js')
     <script>
         $('#activityReportTable').DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
             ajax: "{{ URL::to('aktivitas/get-activity/' . Crypt::encrypt($activity->activity_id)) }}",
-            columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    className: 'text-end'
-                },
+            columns: [
                 {
                     data: 'tgl_setor',
                     name: 'tgl_setor',
@@ -200,6 +203,26 @@
                 },
                 error: function(xhr, status, error) {
                     toastr.error(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('file');
+            const previewImg = document.getElementById('filePreview');
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        previewImg.src = ev.target.result;
+                        previewImg.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    previewImg.src = '#';
+                    previewImg.style.display = 'none';
                 }
             });
         });
