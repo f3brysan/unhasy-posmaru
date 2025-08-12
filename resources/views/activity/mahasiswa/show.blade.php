@@ -92,6 +92,7 @@
                                 <th>No</th>
                                 <th>Tanggal</th>
                                 <th>Kegiatan</th>
+                                <th>File</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -111,13 +112,14 @@
                     <h5 class="modal-title" id="activityReportModalLabel">Tambah Laporan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="activityReportForm" enctype="multipart/form-data">                    
+                <form id="activityReportForm" enctype="multipart/form-data">
                     <input type="hidden" name="activity_id" value="{{ $activity->activity_id }}">
                     <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                     <div class="modal-body">
                         <div class="form-group mb-3">
                             <label for="tgl_setor">Tanggal Lapor</label>
-                            <input type="date" class="form-control" id="tgl_setor" name="tgl_setor" value="{{ date('Y-m-d') }}" readonly>
+                            <input type="date" class="form-control" id="tgl_setor" name="tgl_setor"
+                                value="{{ date('Y-m-d') }}" readonly>
                         </div>
                         <div class="form-group mb-3">
                             <label for="description">Deskripsi Kegiatan</label>
@@ -146,21 +148,31 @@
             ajax: "{{ URL::to('aktivitas/get-activity/' . Crypt::encrypt($activity->activity_id)) }}",
             columns: [{
                     data: 'DT_RowIndex',
-                    name: 'DT_RowIndex'
+                    name: 'DT_RowIndex',
+                    className: 'text-end'
                 },
                 {
                     data: 'tgl_setor',
-                    name: 'tgl_setor'
+                    name: 'tgl_setor',
+                    className: 'text-center'
                 },
                 {
                     data: 'description',
                     name: 'description'
                 },
                 {
+                    data: 'file',
+                    name: 'file',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                },
+                {
                     data: 'action',
                     name: 'action',
                     orderable: false,
-                    searchable: false
+                    searchable: false,
+                    className: 'text-center'
                 },
             ]
         });
@@ -178,9 +190,16 @@
                 url: url,
                 type: 'POST',
                 data: formData,
+                processData: false, // Required for FormData
+                contentType: false, // Required for FormData
+                cache: false,
                 success: function(response) {
                     $('#activityReportModal').modal('hide');
                     $('#activityReportTable').DataTable().ajax.reload();
+                    toastr.success('Laporan berhasil disimpan');
+                },
+                error: function(xhr, status, error) {
+                    toastr.error(xhr.responseJSON.message);
                 }
             });
         });

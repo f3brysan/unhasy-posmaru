@@ -50,6 +50,7 @@ Route::middleware(['auth:web', 'role:superadmin|baak'])->group(function () {
 Route::middleware(['auth:web', 'role:mahasiswa'])->group(function () {
     Route::get('aktivitas/{id}', [MhsActivityController::class, 'show']);
     Route::get('aktivitas/get-activity/{id}', [MhsActivityController::class, 'getActivity']);
+    Route::post('aktivitas/store-activity-report', [MhsActivityController::class, 'storeActivityReport']);
 });
 
 // Auth
