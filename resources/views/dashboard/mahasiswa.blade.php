@@ -83,8 +83,18 @@
                                 $dayCount = $end->diffInDays($start) + 1;
                                 $dayNow = $now->diffInDays($start) + 1;
                                 $progress = $dayNow / $dayCount * 100;
+                                $dayProgress = $dayCount - $dayNow;
+                                
+                                if ($progress > 100) {
+                                    $progress = 100;                                    
+                                }
                             @endphp
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: {{ $progress }}%">{{ $dayCount - $dayNow }} Hari lagi
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: {{ $progress }}%">
+                            @if ($progress >= 100)
+                                Selesai
+                            @else
+                                {{ $dayProgress }} Hari lagi
+                            @endif
                             </div>
                         </div>
                         <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $myReports->count() }} Laporan selesai
