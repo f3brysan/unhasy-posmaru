@@ -63,11 +63,21 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <strong>Diupdate Oleh:</strong>
-                                    <div>{{ $activity->updated_by ?? '-' }}</div>
-                                </div>
+                                <div class="col-md-4">
+                                    <strong>Ukuran Font:</strong>
+                                    <div>{{ $activity->font_size }}</div>
+                                </div>                                
                             </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Kordinat X:</strong>
+                                    <div>{{ $activity->x_coordinate }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Kordinat Y:</strong>
+                                    <div>{{ $activity->y_coordinate }}</div>
+                                </div>                                
+                            </div>                            
                         @else
                             <div class="alert alert-warning">
                                 Data kegiatan tidak ditemukan.
