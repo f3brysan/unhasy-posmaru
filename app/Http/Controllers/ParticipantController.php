@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\ActivityParticipant;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,7 +29,9 @@ class ParticipantController extends Controller
                     return $text;
                 })
                 ->addColumn('action', function ($row) {
-                    return '<a href="javascript:void(0)" class="btn btn-sm btn-primary">Edit</a>';
+                    $btn = '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
+                    $btn .= '<a href="'.URL::to('sertifikat/cetak/'.Crypt::encrypt($row->id)).'" class="btn btn-sm btn-danger m-1" target="_blank">Cetak Sertifikat</a>';
+                    return $btn;
                 })
                 ->rawColumns(['faculty', 'action'])
                 ->make(true);

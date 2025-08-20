@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MsActivityController;
 use App\Http\Controllers\MhsActivityController;
 use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\CertificateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,8 @@ Route::middleware(['auth:web', 'role:mahasiswa'])->group(function () {
     Route::get('aktivitas/get-activity/{id}', [MhsActivityController::class, 'getActivity']);
     Route::post('aktivitas/store-activity-report', [MhsActivityController::class, 'storeActivityReport']);
 });
+
+Route::get('sertifikat/cetak/{id}', [CertificateController::class, 'cetakSertifikat']);
 
 // Auth
 Route::get('login', [AuthController::class, 'login'])->name('login');
