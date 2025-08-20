@@ -9,6 +9,7 @@
                 </a>
             </li>
 
+            @role('superadmin|baak')
             {{-- Start POSMARU --}}
              <li class="menu-item {{ request()->is('kegiatan') ? 'active' : '' }}">
                 <a href="{{ URL::to('kegiatan') }}" class="menu-link">
@@ -17,7 +18,9 @@
                 </a>
             </li>
             {{-- End POSMARU --}}
+            @endrole
 
+            @role('superadmin')
             {{-- Master --}}
             <li class="menu-item {{ request()->is('master*') ? 'active' : '' }}">
                 <a href="javascript:void(0)" class="menu-link menu-toggle">
@@ -34,6 +37,7 @@
                 </ul>
             </li>
             {{-- End Master --}}
+            @endrole
         </ul>
     </div>
 </aside>
