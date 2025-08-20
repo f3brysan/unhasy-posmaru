@@ -77,6 +77,32 @@
 
         <div class="card mt-4">
             <div class="card-header">
+                <h4 class="mb-0">Sertifikat</h4>
+            </div>
+            <div class="card-body">
+                @if ($allowCertificate)
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="certificateTable">
+                        <tr>
+                            <td class="text-center">Sertifikat</td>
+                            <td class="text-center">
+                                <a href="{{ URL::to('sertifikat/cetak/'.Crypt::encrypt($activity->id)) }}" class="btn btn-primary btn-sm" id="btnGenerateCertificate">Unduh Sertifikat</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                @else
+                    <div class="alert alert-warning text-center">
+                        Sertifikat belum tersedia
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="card mt-4">
+                        <tbody>
+                        </tbody>
+            <div class="card-header">
                 <h4 class="mb-0">Laporan Kegiatan</h4>
                 @if (date('Y-m-d H:i:s') >= $time['start'] && date('Y-m-d H:i:s') <= $time['end'])
                     <div class="d-flex justify-content-end">
@@ -88,7 +114,7 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="activityReportTable">
                         <thead>
-                            <tr>                                
+                            <tr>
                                 <th>Tanggal</th>
                                 <th>Deskripsi Kegiatan</th>
                                 <th>File</th>
@@ -101,130 +127,130 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="activityReportModal" tabindex="-1" aria-labelledby="activityReportModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="activityReportModalLabel">Tambah Laporan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="activityReportForm" enctype="multipart/form-data">
-                    <input type="hidden" name="activity_id" value="{{ $activity->activity_id }}">
-                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-                    <div class="modal-body">
-                        <div class="form-group mb-3">
-                            <label for="tgl_setor">Tanggal Lapor</label>
-                            <input type="date" class="form-control" id="tgl_setor" name="tgl_setor"
-                                value="{{ date('Y-m-d') }}" readonly>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="description">Deskripsi Kegiatan</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="file">File</label>
-                            <input type="file" class="form-control" id="file" name="file" accept="image/*">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Preview</label>
-                            <div>
-                                <img id="filePreview" src="#" alt="Preview"
-                                    style="max-width: 100%; max-height: 200px; display: none;" />
+
+        <div class="modal fade" id="activityReportModal" tabindex="-1" aria-labelledby="activityReportModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="activityReportModalLabel">Tambah Laporan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="activityReportForm" enctype="multipart/form-data">
+                        <input type="hidden" name="activity_id" value="{{ $activity->activity_id }}">
+                        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                        <div class="modal-body">
+                            <div class="form-group mb-3">
+                                <label for="tgl_setor">Tanggal Lapor</label>
+                                <input type="date" class="form-control" id="tgl_setor" name="tgl_setor"
+                                    value="{{ date('Y-m-d') }}" readonly>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="description">Deskripsi Kegiatan</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="file">File</label>
+                                <input type="file" class="form-control" id="file" name="file" accept="image/*">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Preview</label>
+                                <div>
+                                    <img id="filePreview" src="#" alt="Preview"
+                                        style="max-width: 100%; max-height: 200px; display: none;" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 @endsection
 
-@push('js')
-    <script>
-        $('#activityReportTable').DataTable({
-            responsive: true,
-            processing: true,
-            serverSide: true,
-            ajax: "{{ URL::to('aktivitas/get-activity/' . Crypt::encrypt($activity->activity_id)) }}",
-            columns: [
-                {
-                    data: 'tgl_setor',
-                    name: 'tgl_setor',
-                    className: 'text-center'
-                },
-                {
-                    data: 'description',
-                    name: 'description'
-                },
-                {
-                    data: 'file',
-                    name: 'file',
-                    orderable: false,
-                    searchable: false,
-                    className: 'text-center'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false,
-                    className: 'text-center'
-                },
-            ]
-        });
-
-        $('#btnAddActivityReport').click(function() {
-            $('#activityReportForm').trigger('reset');
-            $('#activityReportModal').modal('show');
-        });
-
-        $('#activityReportForm').submit(function(e) {
-            e.preventDefault();
-            let formData = new FormData(this);
-            let url = "{{ URL::to('aktivitas/store-activity-report') }}";
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: formData,
-                processData: false, // Required for FormData
-                contentType: false, // Required for FormData
-                cache: false,
-                success: function(response) {
-                    $('#activityReportModal').modal('hide');
-                    $('#activityReportTable').DataTable().ajax.reload();
-                    toastr.success('Laporan berhasil disimpan');
-                },
-                error: function(xhr, status, error) {
-                    toastr.error(xhr.responseJSON.message);
-                }
+    @push('js')
+        <script>
+            $('#activityReportTable').DataTable({
+                responsive: true,
+                processing: true,
+                serverSide: true,
+                ajax: "{{ URL::to('aktivitas/get-activity/'.Crypt::encrypt($activity->activity_id)) }}",
+                columns: [
+                    {
+                        data: 'tgl_setor',
+                        name: 'tgl_setor',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'description',
+                        name: 'description'
+                    },
+                    {
+                        data: 'file',
+                        name: 'file',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                ]
             });
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('file');
-            const previewImg = document.getElementById('filePreview');
+            $('#btnAddActivityReport').click(function () {
+                $('#activityReportForm').trigger('reset');
+                $('#activityReportModal').modal('show');
+            });
 
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(ev) {
-                        previewImg.src = ev.target.result;
-                        previewImg.style.display = 'block';
+            $('#activityReportForm').submit(function (e) {
+                e.preventDefault();
+                let formData = new FormData(this);
+                let url = "{{ URL::to('aktivitas/store-activity-report') }}";
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // Required for FormData
+                    contentType: false, // Required for FormData
+                    cache: false,
+                    success: function (response) {
+                        $('#activityReportModal').modal('hide');
+                        $('#activityReportTable').DataTable().ajax.reload();
+                        toastr.success('Laporan berhasil disimpan');
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error(xhr.responseJSON.message);
                     }
-                    reader.readAsDataURL(file);
-                } else {
-                    previewImg.src = '#';
-                    previewImg.style.display = 'none';
-                }
+                });
             });
-        });
-    </script>
-@endpush
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.getElementById('file');
+                const previewImg = document.getElementById('filePreview');
+
+                fileInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (ev) {
+                            previewImg.src = ev.target.result;
+                            previewImg.style.display = 'block';
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewImg.src = '#';
+                        previewImg.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    @endpush

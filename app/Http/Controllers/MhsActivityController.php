@@ -17,10 +17,22 @@ class MhsActivityController extends Controller
         $id = Crypt::decrypt($id);
         $activity = ActivityParticipant::with('activity')->where('activity_id', $id)->first();
 
+        $activityReport = ActivityReport::where('activity_id', $id)->where('user_id', auth()->user()->id)->get();
+
+        $countActivityReport = $activityReport->count();
+
+
         $time['start'] = date('Y-m-d').' '.$activity->activity->student_report_start;
         $time['end'] = date('Y-m-d').' '.$activity->activity->student_report_end;
 
-        return view('activity.mahasiswa.show', compact('activity', 'time'));
+        // Hitung rentang hari antara tanggal mulai dan tanggal akhir kegiatan
+        $startDate = \Carbon\Carbon::parse($activity->activity->activity_start_date);
+        $endDate = \Carbon\Carbon::parse($activity->activity->activity_end_date);
+        $rentangHari = $startDate->diffInDays($endDate) + 1; // +1 agar inklusif
+        
+        $allowCertificate = $countActivityReport >= $rentangHari ? true : false;
+
+        return view('activity.mahasiswa.show', compact('activity', 'time', 'allowCertificate'));
     }
 
     public function getActivity($id, Request $request)
@@ -32,7 +44,10 @@ class MhsActivityController extends Controller
                 return datatables()->of($reports)
                     ->addIndexColumn()
                     ->addColumn('action', function ($row) {
-                        $button = '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="'. Crypt::encrypt($row->id) .'"><i class="fa fa-trash"></i></a>';
+                        $button = '';
+                        if ($row->created_at->format('Y-m-d') == date('Y-m-d')) {
+                            $button = '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="'. Crypt::encrypt($row->id) .'"><i class="fa fa-trash"></i></a>';
+                        } 
                         return $button;
                     })
                     ->addColumn('file', function ($row) {                        
