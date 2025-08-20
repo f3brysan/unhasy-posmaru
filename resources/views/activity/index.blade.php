@@ -101,6 +101,39 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group mb-2">
+                            <label for="status">Template Sertifikat</label>
+                            <input type="file" class="form-control" id="certificate_template" name="certificate_template">
+                        </div>
+                        <div class="form-group mb-2">
+                        <div class="mb-2">
+                            <label for="certificate_preview" class="form-label">Preview Sertifikat (JPG)</label>
+                            <div id="certificate_preview_container" style="display:none;">
+                                <img id="certificate_preview" src="#" alt="Preview Sertifikat" class="img-fluid border" style="max-height:200px;"/>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const input = document.getElementById('certificate_template');
+                                const previewContainer = document.getElementById('certificate_preview_container');
+                                const previewImg = document.getElementById('certificate_preview');
+                                input.addEventListener('change', function(e) {
+                                    const file = e.target.files[0];
+                                    if (file && file.type === 'image/jpeg') {
+                                        const reader = new FileReader();
+                                        reader.onload = function(ev) {
+                                            previewImg.src = ev.target.result;
+                                            previewContainer.style.display = 'block';
+                                        }
+                                        reader.readAsDataURL(file);
+                                    } else {
+                                        previewImg.src = '#';
+                                        previewContainer.style.display = 'none';
+                                    }
+                                });
+                            });
+                        </script>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -177,6 +210,8 @@
         });
 
         $('#tambahKegiatan').on('click', function() {
+            $('#certificate_preview').attr('src', '#');
+            $('#certificate_preview_container').hide();
             $('#crudModalLabel').text('Tambah Kegiatan');
             $('#formKegiatan')[0].reset();
             $('#crudModal').modal('show');
@@ -228,6 +263,8 @@
 
         $(document).on('click', '.edit', function() {
             var id = $(this).data('id');
+            $('#certificate_preview').attr('src', '#');
+            $('#certificate_preview_container').hide();
             $.ajax({
                 url: "{{ URL::to('kegiatan/edit') }}",
                 type: "POST",
@@ -253,6 +290,8 @@
                         .student_report_start);
                     $('#formKegiatan').find('[name="student_report_end"]').val(data.student_report_end);
                     $('#formKegiatan').find('[name="id"]').val(data.id);
+                    $('#certificate_preview').attr('src', "{{ asset('/') }}/" + data.bg_certificate);
+                    $('#certificate_preview_container').show();
                     $('#crudModal').modal('show');
                 },
                 error: function(xhr) {
@@ -299,7 +338,7 @@
 
         $("#formKegiatan").on('submit', function(e) {
             e.preventDefault();
-            var formData = $(this).serialize();
+            var formData = new FormData(this);
 
             $('#btnSubmit').html('Saving..');
             $('#btnSubmit').attr('disabled', true);
@@ -308,6 +347,8 @@
                 type: "POST",
                 url: "{{ URL::to('kegiatan/store') }}",
                 data: formData,
+                processData: false,
+                contentType: false,
                 dataType: "JSON",
                 success: function(response) {
                     console.log(response);

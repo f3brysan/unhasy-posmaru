@@ -103,7 +103,7 @@ class MsActivityController extends Controller
      */
     public function store(Request $request)
     {
-        try {
+        try {            
             // Validate the incoming request data
             $validator = $this->validateActivity($request);
 
@@ -113,6 +113,16 @@ class MsActivityController extends Controller
                     'status' => 'error',
                     'message' => $validator->errors()->first()
                 ], 422);
+            }
+
+            $path = Activity::where('id', $request->id)->first()->bg_certificate;
+            $path = !empty($path) ? $path : null;
+
+            if ($request->hasFile('certificate_template')) {
+                $file = $request->file('certificate_template');
+                $fileName = $request->name . '_' . date('YmdHis') . '.' . $file->getClientOriginalExtension();
+                $file->move(asset('uploads/certificate_template'), $fileName);
+                $path = 'uploads/certificate_template/' . $fileName;
             }
 
             // Create new activity or update existing one based on ID
@@ -130,6 +140,7 @@ class MsActivityController extends Controller
                     'registration_end_date' => $request->registration_end_date,
                     'student_report_start' => $request->student_report_start,
                     'student_report_end' => $request->student_report_end,
+                    'bg_certificate' => $path,
                     'updated_by' => auth()->user()->name  // Track who updated the record
                 ]
             );
