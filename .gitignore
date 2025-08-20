@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 database/seeders/DatabaseSeeder.php
 public/activity-report/
+public/uploads/
