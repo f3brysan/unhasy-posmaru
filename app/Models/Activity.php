@@ -14,7 +14,7 @@ class Activity extends Model
 
     public $incrementing = false;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'description', 'year', 'registration_start_date', 'registration_end_date', 'activity_start_date', 'activity_end_date', 'is_active', 'student_report_start', 'student_report_end', 'created_at', 'updated_at', 'updated_by', 'bg_certificate', 'x_coordinate', 'y_coordinate', 'font_size'];
 
     public function participants()
     {
