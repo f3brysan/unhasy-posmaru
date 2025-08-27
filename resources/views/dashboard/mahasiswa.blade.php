@@ -97,7 +97,7 @@
                             @endif
                             </div>
                         </div>
-                        <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $myReports->count() }} Laporan selesai
+                        <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $myReports->count() }} Laporan terkirim.
                         </div>
                         <div><a href="{{ URL::to('aktivitas/' . Crypt::encrypt($myActivities->activity_id)) }}"
                                 target="_blank" class="text-white d-flex align-items-center text-decoration-none">Lihat

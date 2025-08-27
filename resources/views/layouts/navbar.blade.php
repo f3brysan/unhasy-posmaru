@@ -26,7 +26,7 @@
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ URL::to('/') }}/assets/img/avatars/1.png" alt
+                                        <img src="https://ui-avatars.com/api/?name={{ str_replace(' ', '+', Auth::user()->name) }}" alt
                                             class="h-auto rounded-circle" />
                                     </div>
                                 </a>
@@ -36,7 +36,7 @@
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ URL::to('/') }}/assets/img/avatars/1.png" alt
+                                                        <img src="https://ui-avatars.com/api/?name={{ str_replace(' ', '+', Auth::user()->name) }}" alt
                                                             class="h-auto rounded-circle" />
                                                     </div>
                                                 </div>
@@ -65,11 +65,39 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="auth-login-cover.html" target="_blank">
+                                        <a class="dropdown-item" href="#" id="logout-link">
                                             <i class="ti ti-logout me-2 ti-sm"></i>
                                             <span class="align-middle">Log Out</span>
                                         </a>
+                                        <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
                                     </li>
+                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const logoutLink = document.getElementById('logout-link');
+                                            if (logoutLink) {
+                                                logoutLink.addEventListener('click', function (e) {
+                                                    e.preventDefault();
+                                                    Swal.fire({
+                                                        title: 'Yakin ingin keluar?',
+                                                        text: "Anda akan keluar dari aplikasi.",
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#3085d6',
+                                                        cancelButtonColor: '#d33',
+                                                        confirmButtonText: 'Ya, keluar',
+                                                        cancelButtonText: 'Batal'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            document.getElementById('logout-form').submit();
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                        });
+                                    </script>
                                 </ul>
                             </li>
                             <!--/ User -->
