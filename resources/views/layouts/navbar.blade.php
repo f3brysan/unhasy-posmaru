@@ -49,21 +49,13 @@
                                     </li>
                                     <li>
                                         <div class="dropdown-divider"></div>
-                                    </li>
+                                    </li>        
                                     <li>
-                                        <a class="dropdown-item" href="pages-profile-user.html">
-                                            <i class="ti ti-user-check me-2 ti-sm"></i>
-                                            <span class="align-middle">My Profile</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-account-settings-account.html">
-                                            <i class="ti ti-settings me-2 ti-sm"></i>
-                                            <span class="align-middle">Settings</span>
-                                        </a>                                    
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
+                                        <a class="dropdown-item" href="{{ URL::to('ganti-password') }}">
+                                            <i class="ti ti-key me-2 ti-sm"></i>
+                                            <span class="align-middle">Ganti Password</span>
+                                        </a>   
+                                    </li>                                                                                                                                 
                                     <li>
                                         <a class="dropdown-item" href="#" id="logout-link">
                                             <i class="ti ti-logout me-2 ti-sm"></i>

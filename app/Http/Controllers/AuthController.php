@@ -8,6 +8,7 @@ use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ActivityParticipant;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 
 class AuthController extends Controller
@@ -158,5 +159,57 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('login');
+    }
+
+    public function gantiPassword()
+    {
+        return view('auth.ganti-password');
+    }
+
+    public function storeGantiPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'old_password' => 'required',
+                'new_password' => 'required|min:8',
+                'new_password_confirmation' => 'required|min:8|same:new_password',
+            ]);
+    
+            if ($request->old_password == $request->new_password) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Password Lama dan Password Baru tidak boleh sama'
+                ], 400);
+            }
+    
+            if ($request->new_password != $request->new_password_confirmation) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Password Baru dan Konfirmasi Password tidak sama'
+                ], 400);
+            }
+    
+            $user = auth()->user();
+    
+            if (Hash::check($request->old_password, $user->password)) {
+                $user->password = bcrypt($request->new_password);
+                $user->save();
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Password Lama Salah'
+                ], 400);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Password Berhasil Diubah'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }

@@ -27,6 +27,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth:web'])->group(function () {
     Route::get('beranda', [DashboardController::class, 'index']);
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('ganti-password', [AuthController::class, 'gantiPassword'])->name('ganti-password');
+    Route::post('ganti-password/store', [AuthController::class, 'storeGantiPassword'])->name('ganti-password.store');
 });
 
 Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
@@ -63,7 +66,7 @@ Route::post('login-as', [AuthController::class, 'loginAs']);
 Route::post('auth', [AuthController::class, 'auth']);
 Route::get('register', [AuthController::class, 'register']);
 Route::post('store-register', [AuthController::class, 'storeRegister']);
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
 
 // API SIAKADU
 Route::post('api/siakadu/get-data/mahasiswa', [SiakaduController::class, 'getDataMahasiswa']);
