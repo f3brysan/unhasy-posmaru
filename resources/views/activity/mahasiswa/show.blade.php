@@ -81,16 +81,17 @@
             </div>
             <div class="card-body">
                 @if ($allowCertificate)
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="certificateTable">
-                        <tr>
-                            <td class="text-center">Sertifikat</td>
-                            <td class="text-center">
-                                <a href="{{ URL::to('sertifikat/cetak/'.Crypt::encrypt($activity->id)) }}" class="btn btn-primary btn-sm" id="btnGenerateCertificate">Unduh Sertifikat</a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="certificateTable">
+                            <tr>
+                                <td class="text-center">Sertifikat</td>
+                                <td class="text-center">
+                                    <a href="{{ URL::to('sertifikat/cetak/' . Crypt::encrypt($activity->id)) }}"
+                                        class="btn btn-primary btn-sm" id="btnGenerateCertificate">Unduh Sertifikat</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 @else
                     <div class="alert alert-warning text-center">
                         Sertifikat belum tersedia
@@ -100,14 +101,16 @@
         </div>
 
         <div class="card mt-4">
-                        <tbody>
-                        </tbody>
+            <tbody>
+            </tbody>
             <div class="card-header">
                 <h4 class="mb-0">Laporan Kegiatan</h4>
-                @if (date('Y-m-d H:i:s') >= $time['start'] && date('Y-m-d H:i:s') <= $time['end'])
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-primary btn-sm" id="btnAddActivityReport">Tambah Laporan</button>
-                    </div>
+                @if ($startDate <= date('Y-m-d') && $endDate >= date('Y-m-d'))
+                    @if (date('Y-m-d H:i:s') >= $time['start'] && date('Y-m-d H:i:s') <= $time['end'])
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary btn-sm" id="btnAddActivityReport">Tambah Laporan</button>
+                        </div>
+                    @endif
                 @endif
             </div>
             <div class="card-body">
@@ -170,17 +173,17 @@
                 </div>
             </div>
         </div>
-@endsection
+    @endsection
 
     @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $('#activityReportTable').DataTable({
                 responsive: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ URL::to('aktivitas/get-activity/'.Crypt::encrypt($activity->activity_id)) }}",
-                columns: [
-                    {
+                ajax: "{{ URL::to('aktivitas/get-activity/' . Crypt::encrypt($activity->activity_id)) }}",
+                columns: [{
                         data: 'tgl_setor',
                         name: 'tgl_setor',
                         className: 'text-center'
@@ -206,12 +209,12 @@
                 ]
             });
 
-            $('#btnAddActivityReport').click(function () {
+            $('#btnAddActivityReport').click(function() {
                 $('#activityReportForm').trigger('reset');
                 $('#activityReportModal').modal('show');
             });
 
-            $('#activityReportForm').submit(function (e) {
+            $('#activityReportForm').submit(function(e) {
                 e.preventDefault();
                 let formData = new FormData(this);
                 let url = "{{ URL::to('aktivitas/store-activity-report') }}";
@@ -222,26 +225,52 @@
                     processData: false, // Required for FormData
                     contentType: false, // Required for FormData
                     cache: false,
-                    success: function (response) {
+                    success: function(response) {
                         $('#activityReportModal').modal('hide');
                         $('#activityReportTable').DataTable().ajax.reload();
                         toastr.success('Laporan berhasil disimpan');
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         toastr.error(xhr.responseJSON.message);
                     }
                 });
             });
 
-            document.addEventListener('DOMContentLoaded', function () {
+            $(document).on('click', '.delete-report', function() {
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: 'Apakah Anda yakin ingin menghapus laporan ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ URL::to('aktivitas/delete-activity-report') }}",
+                            type: 'POST',
+                            data: { id: id },
+                            success: function(response) {
+                                $('#activityReportTable').DataTable().ajax.reload();
+                                toastr.success('Laporan berhasil dihapus');
+                            },
+                            error: function(xhr, status, error) {
+                                toastr.error(xhr.responseJSON.message);
+                            }
+                        });
+                    }
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
                 const fileInput = document.getElementById('file');
                 const previewImg = document.getElementById('filePreview');
 
-                fileInput.addEventListener('change', function (e) {
+                fileInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file && file.type.startsWith('image/')) {
                         const reader = new FileReader();
-                        reader.onload = function (ev) {
+                        reader.onload = function(ev) {
                             previewImg.src = ev.target.result;
                             previewImg.style.display = 'block';
                         }

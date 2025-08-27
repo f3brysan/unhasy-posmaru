@@ -29,10 +29,10 @@ class MhsActivityController extends Controller
         $startDate = \Carbon\Carbon::parse($activity->activity->activity_start_date);
         $endDate = \Carbon\Carbon::parse($activity->activity->activity_end_date);
         $rentangHari = $startDate->diffInDays($endDate) + 1; // +1 agar inklusif
-        
+
         $allowCertificate = $countActivityReport >= $rentangHari ? true : false;
 
-        return view('activity.mahasiswa.show', compact('activity', 'time', 'allowCertificate'));
+        return view('activity.mahasiswa.show', compact('activity', 'time', 'allowCertificate', 'startDate', 'endDate'));
     }
 
     public function getActivity($id, Request $request)
@@ -46,14 +46,14 @@ class MhsActivityController extends Controller
                     ->addColumn('action', function ($row) {
                         $button = '';
                         if ($row->created_at->format('Y-m-d') == date('Y-m-d')) {
-                            $button = '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="'. Crypt::encrypt($row->id) .'"><i class="fa fa-trash"></i></a>';
-                        } 
+                            $button = '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="'.Crypt::encrypt($row->id).'"><i class="fa fa-trash"></i></a>';
+                        }
                         return $button;
                     })
-                    ->addColumn('file', function ($row) {                        
+                    ->addColumn('file', function ($row) {
                         $filePath = public_path($row->picture);
                         if (file_exists($filePath)) {
-                            return '<a class="btn btn-sm btn-primary" href="'. asset($row->picture) .'" target="_blank"><i class="fa fa-file"></i>&nbsp;File Laporan</a>';
+                            return '<a class="btn btn-sm btn-primary" href="'.asset($row->picture).'" target="_blank"><i class="fa fa-file"></i>&nbsp;File Laporan</a>';
                         } else {
                             return '-';
                         }
@@ -124,5 +124,25 @@ class MhsActivityController extends Controller
         //         'message' => $th->getMessage()
         //     ], 500);
         // }
+    }
+
+    public function deleteActivityReport(Request $request)
+    {
+        try {
+            $id = Crypt::decrypt($request->id);
+            $activityReport = ActivityReport::find($id);
+            unlink(public_path($activityReport->picture));
+            $activityReport->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Laporan berhasil dihapus'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }

@@ -52,6 +52,7 @@ Route::middleware(['auth:web', 'role:mahasiswa'])->group(function () {
     Route::get('aktivitas/{id}', [MhsActivityController::class, 'show']);
     Route::get('aktivitas/get-activity/{id}', [MhsActivityController::class, 'getActivity']);
     Route::post('aktivitas/store-activity-report', [MhsActivityController::class, 'storeActivityReport']);
+    Route::post('aktivitas/delete-activity-report', [MhsActivityController::class, 'deleteActivityReport']);
 });
 
 Route::get('sertifikat/cetak/{id}', [CertificateController::class, 'cetakSertifikat']);
