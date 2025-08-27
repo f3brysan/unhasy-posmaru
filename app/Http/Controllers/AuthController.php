@@ -201,6 +201,10 @@ class AuthController extends Controller
                 ], 400);
             }
 
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Password Berhasil Diubah'
