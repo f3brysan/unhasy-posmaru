@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Activity;
 use Illuminate\Http\Request;
+use App\Models\ActivityReport;
+use Illuminate\Support\Facades\DB;
 use App\Models\ActivityParticipant;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Crypt;
@@ -15,13 +18,42 @@ class ParticipantController extends Controller
     {
         $participants = ActivityParticipant::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', Crypt::decrypt($id))->get();     
         
+        $activityReportCountByUser = ActivityReport::where('activity_id', Crypt::decrypt($id))->select('user_id', DB::raw('COUNT(*) as total'))->groupBy('user_id')->get()->pluck('total', 'user_id')->toArray();
+        
+        $activity = Activity::find(Crypt::decrypt($id));
+
+        
+        $activity->activity_start_date = date('d-m-Y', strtotime($activity->activity_start_date));
+        $activity->activity_end_date = date('d-m-Y', strtotime($activity->activity_end_date));
+
+        // count day between activity_start_date and activity_end_date
+        $start = \Carbon\Carbon::parse($activity->activity_start_date);
+        $end = \Carbon\Carbon::parse($activity->activity_end_date);
+        $daysCount = $start->diffInDays($end) + 1;        
+        
         if ($request->ajax()) {
             return datatables()->of($participants)
                 ->addColumn('nim', function ($row) {
-                    return $row->user->no_induk;
+                    $text = $row->user->no_induk;
+                    $text .= '<br>';
+                    $text .= $row->user->name;
+                    return $text;
+                })        
+                ->addColumn('total_report', function ($row) use ($activityReportCountByUser) {
+                    return $activityReportCountByUser[$row->user_id] ?? 0;
                 })
-                ->addColumn('name', function ($row) {
-                    return $row->user->name;
+                ->addColumn('status', function ($row) use ($activityReportCountByUser, $daysCount) {
+
+                    $reportCount = $activityReportCountByUser[$row->user_id] ?? 0;
+                    if ($row->is_permitted == 1) {
+                        return '<span class="badge bg-success">Lengkap</span>';
+                    } 
+
+                    if ($reportCount == $daysCount) {
+                        return '<span class="badge bg-success">Lengkap</span>';
+                    } else {
+                        return '<span class="badge bg-danger">Belum Lengkap</span>';
+                    }
                 })
                 ->addColumn('faculty', function ($row) {
                     $text = $row->user->biodata->prodi->prodi . '<br>';
@@ -31,9 +63,12 @@ class ParticipantController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
                     $btn .= '<a href="'.URL::to('sertifikat/cetak/'.Crypt::encrypt($row->id)).'" class="btn btn-sm btn-danger m-1" target="_blank">Cetak Sertifikat</a>';
+                    if ($row->is_permitted == 0) {
+                        $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-warning m-1" data-id="'.Crypt::encrypt($row->id).'">Amnesti</a>';
+                    }
                     return $btn;
                 })
-                ->rawColumns(['faculty', 'action'])
+                ->rawColumns(['faculty', 'action', 'nim', 'status'])
                 ->make(true);
         }        
     }

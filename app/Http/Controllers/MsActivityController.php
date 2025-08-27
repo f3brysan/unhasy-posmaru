@@ -45,9 +45,9 @@ class MsActivityController extends Controller
                                     <i class="ti ti-eye"></i>
                                 </a>';
                         // Edit button with encrypted ID (pencil icon)
-                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Edit" class="btn btn-warning btn-sm edit">
-                                    <i class="ti ti-pencil"></i>
-                                </a>';
+                        // $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Edit" class="btn btn-warning btn-sm edit">
+                        //             <i class="ti ti-pencil"></i>
+                        //         </a>';
                         // Delete button with encrypted ID (trash icon)
                         $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Delete" class="btn btn-danger btn-sm delete">
                                     <i class="ti ti-trash"></i>
@@ -55,12 +55,12 @@ class MsActivityController extends Controller
                         // Status toggle button based on current status
                         if ($row->is_active == 1) {
                             // If active, show "Non Aktifkan" (Deactivate) button (toggle-left icon)
-                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="0" title="Non Aktifkan" class="btn btn-success btn-sm change-status">
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="0" title="Non Aktifkan" class="btn btn-secondary btn-sm change-status">
                                         <i class="ti ti-toggle-right"></i>
                                     </a>';
                         } else {
                             // If inactive, show "Aktifkan" (Activate) button (toggle-right icon)
-                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="1" title="Aktifkan" class="btn btn-secondary btn-sm change-status">
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="1" title="Aktifkan" class="btn btn-success btn-sm change-status">
                                         <i class="ti ti-toggle-left"></i>
                                     </a>';
                         }
@@ -141,6 +141,9 @@ class MsActivityController extends Controller
                     'student_report_start' => $request->student_report_start,
                     'student_report_end' => $request->student_report_end,
                     'bg_certificate' => $path,
+                    'x_coordinate' => $request->coordinate_x,
+                    'y_coordinate' => $request->coordinate_y,
+                    'font_size' => $request->font_size,
                     'updated_by' => auth()->user()->name  // Track who updated the record
                 ]
             );

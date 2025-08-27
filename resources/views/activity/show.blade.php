@@ -66,7 +66,7 @@
                                 <div class="col-md-4">
                                     <strong>Ukuran Font:</strong>
                                     <div>{{ $activity->font_size }}</div>
-                                </div>                                
+                                </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -76,13 +76,17 @@
                                 <div class="col-md-6">
                                     <strong>Kordinat Y:</strong>
                                     <div>{{ $activity->y_coordinate }}</div>
-                                </div>                                
-                            </div>                            
+                                </div>
+                            </div>
                         @else
                             <div class="alert alert-warning">
                                 Data kegiatan tidak ditemukan.
                             </div>
                         @endif
+                    </div>
+                    <div class="card-footer">
+                        <a href="javascript:void(0)" class="btn btn-primary float-end" id="btnEditActivity">Edit
+                            Kegiatan</a>
                     </div>
                 </div>
             </div>
@@ -100,8 +104,9 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">NIM</th>
-                                        <th class="text-center">Nama</th>
                                         <th class="text-center">Prodi/Fakultas</th>
+                                        <th class="text-center">Total Laporan</th>
+                                        <th class="text-center">Status</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -177,16 +182,22 @@
                                                         <tr>
                                                             <td class="text-center">{{ $report->user->no_induk }}</td>
                                                             <td>{{ $report->user->name }}</td>
-                                                            <td class="text-center">{{ $report->user->biodata->prodi->prodi }}
-                                                            <br>
-                                                            Fakultas{{ $report->user->biodata->fakultas->fakultas }}
+                                                            <td class="text-center">
+                                                                {{ $report->user->biodata->prodi->prodi }}
+                                                                <br>
+                                                                Fakultas{{ $report->user->biodata->fakultas->fakultas }}
                                                             </td>
                                                             <td class="text-center">
-                                                                <a href="{{ asset($report->picture) }}" target="_blank" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i>&nbsp;Lihat</a>
-                                                                <p class="small mt-2">{{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}</p>
+                                                                <a href="{{ asset($report->picture) }}" target="_blank"
+                                                                    class="btn btn-sm btn-primary"><i
+                                                                        class="fa fa-eye"></i>&nbsp;Lihat</a>
+                                                                <p class="small mt-2">
+                                                                    {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
+                                                                </p>
                                                             </td>
                                                             <td class="text-center">
-                                                                <a href="javascript:void(0)" class="btn btn-sm btn-primary">Edit</a>
+                                                                <a href="javascript:void(0)"
+                                                                    class="btn btn-sm btn-primary">Edit</a>
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -194,7 +205,8 @@
                                             </table>
                                         @else
                                             <div class="alert alert-warning text-center">
-                                               <i class="fa fa-exclamation-triangle"></i> Belum ada data untuk ditampilkan pada tanggal
+                                                <i class="fa fa-exclamation-triangle"></i> Belum ada data untuk ditampilkan
+                                                pada tanggal
                                                 <strong>{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</strong>.
                                             </div>
                                         @endif
@@ -241,104 +253,283 @@
                 </form>
             </div>
         </div>
-
-        
     </div>
     {{-- End Modal Add Participant --}}
+
+    {{-- Modal CRUD --}}
+    <div class="modal fade" id="editActivityModal" tabindex="-1" aria-labelledby="editActivityModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="crudModalLabel">Edit Kegiatan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formKegiatan">
+                    <input type="hidden" name="id" id="id" value="{{ $activity->id }}">
+                    <div class="modal-body">
+                        <div class="form-group mb-2">
+                            <label for="name">Nama Kegiatan</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                value="{{ $activity->name }}" required>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="year">Tahun</label>
+                            <select name="year" id="year" class="form-control form-select" required>
+                                <option value="">Silahkan Pilih</option>
+                                @for ($year = date('Y'); $year > date('Y') - 5; $year--)
+                                    <option value="{{ $year }}" {{ $activity->year == $year ? 'selected' : '' }}>
+                                        {{ $year }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="registration_start_date">Tanggal Awal Pendaftaran</label>
+                                    <input type="date" class="form-control" id="registration_start_date"
+                                        name="registration_start_date" value="{{ $activity->registration_start_date }}"
+                                        required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="registration_end_date">Tanggal Akhir Pendaftaran</label>
+                                    <input type="date" class="form-control" id="registration_end_date"
+                                        name="registration_end_date" value="{{ $activity->registration_end_date }}"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="activity_start_date">Tanggal Mulai Kegiatan</label>
+                                    <input type="date" class="form-control" id="activity_start_date"
+                                        name="activity_start_date" value="{{ $activity->activity_start_date }}" required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="activity_end_date">Tanggal Selesai Kegiatan</label>
+                                    <input type="date" class="form-control" id="activity_end_date"
+                                        name="activity_end_date" value="{{ $activity->activity_end_date }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="student_report_start">Batas Awal Absensi</label>
+                                    <input type="text" class="form-control timepicker" id="student_report_start"
+                                        name="student_report_start" value="{{ $activity->student_report_start }}"
+                                        required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="student_report_end">Batas Akhir Absensi</label>
+                                    <input type="text" class="form-control timepicker" id="student_report_end"
+                                        name="student_report_end" value="{{ $activity->student_report_end }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label for="certificate_template">Kordinat X</label>
+                                    <input type="text" class="form-control" id="coordinate_x" name="coordinate_x"
+                                        value="{{ $activity->x_coordinate }}">
+                                </div>
+                                <div class="col-4">
+                                    <label for="certificate_template">Kordinat Y</label>
+                                    <input type="text" class="form-control" id="coordinate_y" name="coordinate_y"
+                                        value="{{ $activity->y_coordinate }}">
+                                </div>
+                                <div class="col-4">
+                                    <label for="certificate_template">Font Size</label>
+                                    <input type="text" class="form-control" id="font_size" name="font_size"
+                                        value="{{ $activity->font_size }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="status">Template Sertifikat</label>
+                            <input type="file" class="form-control" id="certificate_template"
+                                name="certificate_template">
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="mb-2">
+                                <label for="certificate_preview" class="form-label">Preview Sertifikat (JPG)</label>
+                                <div id="certificate_preview_container"
+                                    style="{{ $activity->bg_certificate ? 'display:block' : 'display:none' }}">
+                                    <img id="certificate_preview" src="{{ asset($activity->bg_certificate) ?? '#' }}"
+                                        alt="Preview Sertifikat" class="img-fluid border" style="max-height:200px;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmit">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{-- End Modal CRUD --}}
 @endsection
 @push('js')
-            <script>
-                $(document).ready(function() {
-                    $('.data-table').DataTable({
-                        responsive: true,
+    <script>
+        $(document).ready(function() {
+            $('.data-table').DataTable({
+                responsive: true,
+            });
+            $('#participantsTable').DataTable({
+                scrollX: true,
+                responsive: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
+                    type: 'GET'
+                },
+                columns: [
+                    {
+                        data: 'nim',
+                        name: 'nim',
+                        className: 'text-center'
+                    },                    
+                    {
+                        data: 'faculty',
+                        name: 'faculty',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'total_report',
+                        name: 'total_report',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        className: 'text-center'
+                    }
+                ]
+            });
+
+            $('#btnAddParticipant').on('click', function() {
+                $('#addParticipantModal').modal('show');
+            });
+
+            $('#formAddParticipant').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var data = form.serialize();
+                $.ajax({
+                    url: "{{ url('kegiatan/add-participant') }}",
+                    method: "POST",
+                    data: data,
+                    dataType: "JSON",
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseJSON);
+                        toastr.error(xhr.responseJSON.message);
+                    }
                 });
-                    $('#participantsTable').DataTable({
-                        scrollX: true,
-                        responsive: true,
-                        processing: true,
-                        serverSide: true,
-                        ajax: {
-                            url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
-                            type: 'GET'
+            });
+
+            $('#participant_nim').on('keyup', function() {
+                var nim = $(this).val();
+                $('#participant_name').val('');
+
+                // Clear previous timeout if it exists
+                if (typeof this.delayTimer !== 'undefined') {
+                    clearTimeout(this.delayTimer);
+                }
+
+                // Set new timeout
+                this.delayTimer = setTimeout(() => {
+                    $.ajax({
+                        url: "{{ url('master/pengguna/get-participant') }}",
+                        method: "POST",
+                        data: {
+                            nim: nim
                         },
-                        columns: [{
-                                data: 'nim',
-                                name: 'nim',
-                                className: 'text-center'
-                            },
-                            {
-                                data: 'name',
-                                name: 'name'
-                            },
-                            {
-                                data: 'faculty',
-                                name: 'faculty',
-                                className: 'text-center'
-                            },
-                            {
-                                data: 'action',
-                                name: 'action',
-                                className: 'text-center'
+                        dataType: "JSON",
+                        success: function(res) {
+                            if (res.status == 'success') {
+                                $('#participant_name').val(res.data.name);
                             }
-                        ]
-                    });
-
-                    $('#btnAddParticipant').on('click', function() {
-                        $('#addParticipantModal').modal('show');
-                    });
-
-                    $('#formAddParticipant').on('submit', function(e) {
-                        e.preventDefault();
-                        var form = $(this);
-                        var data = form.serialize();
-                        $.ajax({
-                            url: "{{ url('kegiatan/add-participant') }}",
-                            method: "POST",
-                            data: data,
-                            dataType: "JSON",
-                            success: function(res) {
-                                console.log(res);
-                            },
-                            error: function(xhr, status, error) {
-                                console.log(xhr.responseJSON);
-                                toastr.error(xhr.responseJSON.message);
-                            }
-                        });
-                    });
-
-
-                    $('#participant_nim').on('keyup', function() {
-                        var nim = $(this).val();
-                        $('#participant_name').val('');
-
-                        // Clear previous timeout if it exists
-                        if (typeof this.delayTimer !== 'undefined') {
-                            clearTimeout(this.delayTimer);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(xhr.responseJSON);
+                            $('#participant_name').val('');
+                            toastr.error(xhr.responseJSON.message);
                         }
-
-                        // Set new timeout
-                        this.delayTimer = setTimeout(() => {
-                            $.ajax({
-                                url: "{{ url('master/pengguna/get-participant') }}",
-                                method: "POST",
-                                data: {
-                                    nim: nim
-                                },
-                                dataType: "JSON",
-                                success: function(res) {
-                                    if (res.status == 'success') {
-                                        $('#participant_name').val(res.data.name);
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    console.log(xhr.responseJSON);
-                                    $('#participant_name').val('');
-                                    toastr.error(xhr.responseJSON.message);
-                                }
-                            });
-                        }, 1000);
                     });
+                }, 1000);
+            });
 
+            $('#btnEditActivity').on('click', function() {
+                $('#editActivityModal').modal('show');
+            });
+
+            $("#formKegiatan").on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $('#btnSubmit').html('Saving..');
+                $('#btnSubmit').attr('disabled', true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ URL::to('kegiatan/store') }}",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: "JSON",
+                    success: function(response) {
+                        console.log(response);
+                        toastr.success(response.message, 'Success!');
+                        $('#crudModal').modal('hide');
+                        $('#btnSubmit').html('Save Changes');
+                        $('#btnSubmit').attr('disabled', false);
+                        $('#formKegiatan')[0].reset();
+                        $('#editActivityModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseJSON.message);
+                        toastr.error(xhr.responseJSON.message, 'Oops!');
+                        $('#btnSubmit').html('Save Changes');
+                        $('#btnSubmit').attr('disabled', false);
+                    }
                 });
-            </script>
-        @endpush
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('certificate_template');
+            const previewContainer = document.getElementById('certificate_preview_container');
+            const previewImg = document.getElementById('certificate_preview');
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && file.type === 'image/jpeg') {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        previewImg.src = ev.target.result;
+                        previewContainer.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    previewImg.src = '#';
+                    previewContainer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+@endpush
