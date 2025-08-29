@@ -40,7 +40,7 @@ Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
     Route::post('master/pengguna/reset-password', [UserController::class, 'resetPassword']);
 });
 
-Route::middleware(['auth:web', 'role:superadmin|baak'])->group(function () {
+Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan'])->group(function () {
     Route::get('kegiatan', [MsActivityController::class, 'index']);
     Route::post('kegiatan/store', [MsActivityController::class, 'store']);
     Route::post('kegiatan/change-status', [MsActivityController::class, 'changeStatus']);

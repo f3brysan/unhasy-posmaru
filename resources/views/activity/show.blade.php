@@ -85,8 +85,10 @@
                         @endif
                     </div>
                     <div class="card-footer">
-                        <a href="javascript:void(0)" class="btn btn-primary float-end" id="btnEditActivity">Edit
-                            Kegiatan</a>
+                        @hasrole('superadmin|baak')
+                            <a href="javascript:void(0)" class="btn btn-primary float-end" id="btnEditActivity">Edit
+                                Kegiatan</a>
+                        @endhasrole
                     </div>
                 </div>
             </div>
@@ -94,9 +96,11 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Daftar Peserta</h4>
-                        <button class="btn btn-primary" id="btnAddParticipant"
-                            data-activity-id="{{ $activity->id ?? '' }}">Tambah
-                            Peserta</button>
+                        @hasrole('superadmin|baak')
+                            <button class="btn btn-primary" id="btnAddParticipant"
+                                data-activity-id="{{ $activity->id ?? '' }}">Tambah
+                                Peserta</button>
+                        @endhasrole
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -173,8 +177,7 @@
                                                         <th class="text-center">NIM</th>
                                                         <th class="text-center">Nama</th>
                                                         <th class="text-center">Prodi/Fakultas</th>
-                                                        <th class="text-center">Bukti Kehadiran</th>
-                                                        <th class="text-center">Aksi</th>
+                                                        <th class="text-center">Bukti Kehadiran</th>                                                        
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -194,11 +197,7 @@
                                                                 <p class="small mt-2">
                                                                     {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
                                                                 </p>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <a href="javascript:void(0)"
-                                                                    class="btn btn-sm btn-primary">Edit</a>
-                                                            </td>
+                                                            </td>                                                            
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
