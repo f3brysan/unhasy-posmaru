@@ -22,7 +22,7 @@ use App\Http\Controllers\CertificateController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.landing-page');
 });
 
 Route::middleware(['auth:web'])->group(function () {
