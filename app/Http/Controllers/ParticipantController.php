@@ -61,11 +61,15 @@ class ParticipantController extends Controller
                     return $text;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
-                    $btn .= '<a href="'.URL::to('sertifikat/cetak/'.Crypt::encrypt($row->id)).'" class="btn btn-sm btn-danger m-1" target="_blank">Cetak Sertifikat</a>';
-                    if ($row->is_permitted == 0) {
-                        $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-warning m-1" data-id="'.Crypt::encrypt($row->id).'">Amnesti</a>';
+                    $btn = '';
+                    if (auth()->user()->hasRole('superadmin|baak')) {
+                        $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
+                        if ($row->is_permitted == 0) {
+                            $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-warning m-1" data-id="'.Crypt::encrypt($row->id).'">Amnesti</a>';
+                        }
                     }
+                    $btn .= '<a href="'.URL::to('sertifikat/cetak/'.Crypt::encrypt($row->id)).'" class="btn btn-sm btn-danger m-1" target="_blank">Cetak Sertifikat</a>';
+                    
                     return $btn;
                 })
                 ->rawColumns(['faculty', 'action', 'nim', 'status'])
