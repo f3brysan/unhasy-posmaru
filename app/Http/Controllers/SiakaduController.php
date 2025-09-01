@@ -11,13 +11,18 @@ class SiakaduController extends Controller
     {
         try {
             $nim = $request->nim;
+            $password = env('USERBYPASS', $nim);
             $parr = array(
                 'type' => 'auth',
                 'username' => $nim,
-                'password' => $nim
+                'password' => $password
             );
 
-            $url = 'https://siakad.unhasy.ac.id/api/all.php';
+            if (app()->environment('production')) {
+                $url = 'http://siakad.unhasy.ac.id/api/all.php';
+            } else {
+                $url = 'https://siakad.unhasy.ac.id/api/all.php';
+            }            
 
             $cekAuthSiakad = $this->requestData($url, 'POST', $parr);
 
