@@ -176,6 +176,12 @@
                     <div class="card-body">
                         <figure class="highcharts-figure">
                             <div id="containerSize" class="highcharts-light"></div>
+                            <p class="text-center mt-2">Jumlah Peserta: {{ $participants }}</p>
+                            <p class="text-center mt-2">
+                            @foreach ($chartSize as $key => $size)
+                               <li>{{ $key }}: {{ $size }} pcs</li>
+                            @endforeach
+                            </p>
                         </figure>
                     </div>
                 </div>
