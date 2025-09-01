@@ -23,6 +23,9 @@ class DashboardController extends Controller
             case 'baak':
                 return $this->baakDashboard();
 
+            case 'panitia':
+                return $this->baakDashboard();            
+
             case 'pimpinan':
                 return $this->pimpinanDashboard();
 

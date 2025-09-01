@@ -32,7 +32,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('ganti-password/store', [AuthController::class, 'storeGantiPassword'])->name('ganti-password.store');
 });
 
-Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
+Route::middleware(['auth:web', 'role:superadmin|panitia|baak'])->group(function () {
     Route::get('master/pengguna', [UserController::class, 'index']);
     Route::post('master/pengguna/store', [UserController::class, 'store']);
     Route::post('master/pengguna/edit', [UserController::class, 'edit']);
@@ -40,7 +40,7 @@ Route::middleware(['auth:web', 'role:superadmin'])->group(function () {
     Route::post('master/pengguna/reset-password', [UserController::class, 'resetPassword']);
 });
 
-Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan'])->group(function () {
+Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan|panitia'])->group(function () {
     Route::get('kegiatan', [MsActivityController::class, 'index']);
     Route::post('kegiatan/store', [MsActivityController::class, 'store']);
     Route::post('kegiatan/change-status', [MsActivityController::class, 'changeStatus']);

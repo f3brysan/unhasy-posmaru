@@ -96,7 +96,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Daftar Peserta</h4>
-                        @hasrole('superadmin|baak')
+                        @hasrole('superadmin|baak|panitia')
                             <button class="btn btn-primary" id="btnAddParticipant"
                                 data-activity-id="{{ $activity->id ?? '' }}">Tambah
                                 Peserta</button>

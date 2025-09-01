@@ -18,7 +18,7 @@
                 <table class="datatables-basic table" id="myTable">
                     <thead>
                         <tr>
-                            <th class="text-center">No Induk</th>
+                            <th class="text-center">No Induk/Username</th>
                             <th class="text-center">Name</th>
                             <th class="text-center">Peran</th>
                             <th class="text-center">Aksi</th>
@@ -43,7 +43,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="no_induk">No Induk</label>
+                                    <label for="no_induk">No Induk/Username</label>
                                     <input type="text" class="form-control" id="no_induk" name="no_induk" required>
                                 </div>
                             </div>

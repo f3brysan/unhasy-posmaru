@@ -43,6 +43,11 @@ class UserController extends Controller
                                 case 'mahasiswa':
                                     $roles = '<span class="badge bg-info">Mahasiswa</span>';
                                     break;
+
+                                case 'panitia':
+                                    $roles = '<span class="badge bg-warning">Panitia</span>';
+                                    break;
+
                                 default:
                                     $roles = '<span class="badge bg-secondary">Pimpinan</span>';
                             }
@@ -97,7 +102,7 @@ class UserController extends Controller
             ]);
         }
     }
-    
+
     public function store(Request $request)
     {
         try {
@@ -109,7 +114,7 @@ class UserController extends Controller
                     // Return error response if user already exists
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Pengguna dengan No Induk ' . $request->no_induk . ' sudah ada',
+                        'message' => 'Pengguna dengan No Induk '.$request->no_induk.' sudah ada',
                     ], 400);
                 }
             }
@@ -120,7 +125,7 @@ class UserController extends Controller
             ], [
                 'no_induk' => $request->no_induk,
                 'name' => $request->name,
-                'email' => $request->no_induk . '@unhasy.ac.id',
+                'email' => $request->no_induk.'@unhasy.ac.id',
                 'password' => bcrypt($request->no_induk),
             ]);
 
@@ -144,7 +149,7 @@ class UserController extends Controller
             ], 400);
         }
     }
-    
+
     public function edit(Request $request)
     {
         try {
@@ -174,7 +179,7 @@ class UserController extends Controller
     {
         try {
             $participant = User::where('no_induk', $request->nim)->first();
-            if (!$participant) {
+            if (! $participant) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Mahasiswa tidak ditemukan',
