@@ -31,7 +31,7 @@ class MsActivityController extends Controller
     public function index(Request $request)
     {
         // Get all activities from database
-        $activities = Activity::all();
+        $activities = Activity::with('participants')->get();
 
         try {
             // Check if request is AJAX (DataTables request)
@@ -70,7 +70,7 @@ class MsActivityController extends Controller
                     })
                     // Add participant count column (hardcoded to 99 for now)
                     ->addColumn('peserta', function ($row) {
-                        return 99;
+                        return $row->participants->count();
                     })
                     // Add status badge column
                     ->addColumn('status_btn', function ($row) {
