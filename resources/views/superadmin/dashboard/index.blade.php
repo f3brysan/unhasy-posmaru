@@ -152,7 +152,7 @@
             <!-- Chart -->
         </div>
 
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
@@ -160,7 +160,22 @@
                     </div>
                     <div class="card-body">
                         <figure class="highcharts-figure">
-                            <div id="container" class="highcharts-light"></div>                            
+                            <div id="container" class="highcharts-light"></div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="card-title mb-0">Grafik Ukuran Kaos</h5>
+                    </div>
+                    <div class="card-body">
+                        <figure class="highcharts-figure">
+                            <div id="containerSize" class="highcharts-light"></div>
                         </figure>
                     </div>
                 </div>
@@ -177,7 +192,7 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script src="https://code.highcharts.com/themes/adaptive.js"></script>
-    
+
 
     <script>
         $(document).ready(function() {
@@ -187,12 +202,12 @@
             // Create the chart
             Highcharts.chart('container', {
                 chart: {
-                    type: 'column',                    
+                    type: 'column',
                 },
 
                 title: {
                     text: 'Grafik Peserta Kegiatan'
-                },                
+                },
                 accessibility: {
                     announceNewData: {
                         enabled: true
@@ -247,21 +262,78 @@
                     },
                     series: [
                         @foreach ($facultyChart as $faculty)
-                        {
-                        name: '{{ $faculty['nama'] }}',
-                        id: '{{ $faculty['nama'] }}',
-                        data: [
-                            @foreach ($faculty['prodi'] as $prodi)
-                            [
-                                '{{ $prodi['nama'] }}',
-                                {{ $prodi['total'] }}
-                            ],
-                            @endforeach
-                        ]
-                    }, 
-                    @endforeach
+                            {
+                                name: '{{ $faculty['nama'] }}',
+                                id: '{{ $faculty['nama'] }}',
+                                data: [
+                                    @foreach ($faculty['prodi'] as $prodi)
+                                        [
+                                            '{{ $prodi['nama'] }}',
+                                            {{ $prodi['total'] }}
+                                        ],
+                                    @endforeach
+                                ]
+                            },
+                        @endforeach
                     ]
                 }
+            });
+
+            Highcharts.chart('containerSize', {
+                chart: {
+                    type: 'pie',
+                    zooming: {
+                        type: 'xy'
+                    },
+                    panning: {
+                        enabled: true,
+                        type: 'xy'
+                    },
+                    panKey: 'shift'
+                },
+                title: {
+                    text: 'Grafik Ukuran Kaos'
+                },
+                tooltip: {
+                    valueSuffix: '%'
+                },
+
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: [{
+                            enabled: true,
+                            distance: 20
+                        }, {
+                            enabled: true,
+                            distance: -40,
+                            format: '{point.percentage:.1f}%',
+                            style: {
+                                fontSize: '1.2em',
+                                textOutline: 'none',
+                                opacity: 0.7
+                            },
+                            filter: {
+                                operator: '>',
+                                property: 'percentage',
+                                value: 10
+                            }
+                        }]
+                    }
+                },
+                series: [{
+                    name: 'Ukuran Kaos',
+                    colorByPoint: true,
+                    data: [
+                        @foreach ($chartSize as $key => $size)
+                            {
+                                name: '{{ $key }}',
+                                y: {{ $size }}
+                            },
+                        @endforeach
+                    ]
+                }]
             });
 
 

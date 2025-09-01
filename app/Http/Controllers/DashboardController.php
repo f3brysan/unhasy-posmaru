@@ -40,6 +40,15 @@ class DashboardController extends Controller
 
         $activityReports = ActivityReport::where('activity_id', $activities->id)->count();
 
+        $chartSize = DB::table('biodatas as b')
+        ->select('b.chart_size',DB::raw('COUNT(*) as total'))
+        ->join('activity_participants as ap','ap.user_id','=','b.id')
+        ->where('ap.activity_id','=',$activities->id)
+        ->groupBy('b.chart_size')
+        ->get()
+        ->pluck('total', 'chart_size')
+        ->toArray();
+
         $genderCount = DB::table('biodatas as b')
         ->select('b.gender',DB::raw('COUNT(*) as total'))
         ->join('activity_participants as ap','ap.user_id','=','b.id')
@@ -70,7 +79,7 @@ class DashboardController extends Controller
             $facultyChart[$participant->fakultas_kode]['prodi'][trim($participant->prodi_kode)]['total']++;
         }        
         
-        return view('superadmin.dashboard.index', compact('activities', 'participants', 'genderCount', 'activityReports', 'facultyChart'));
+        return view('superadmin.dashboard.index', compact('activities', 'participants', 'genderCount', 'activityReports', 'facultyChart', 'chartSize'));
     }
 
     public function mahasiswaDashboard()
@@ -92,6 +101,15 @@ class DashboardController extends Controller
 
         $activityReports = ActivityReport::where('activity_id', $activities->id)->count();
 
+        $chartSize = DB::table('biodatas as b')
+        ->select('b.chart_size',DB::raw('COUNT(*) as total'))
+        ->join('activity_participants as ap','ap.user_id','=','b.id')
+        ->where('ap.activity_id','=',$activities->id)
+        ->groupBy('b.chart_size')
+        ->get()
+        ->pluck('total', 'chart_size')
+        ->toArray();
+
         $genderCount = DB::table('biodatas as b')
         ->select('b.gender',DB::raw('COUNT(*) as total'))
         ->join('activity_participants as ap','ap.user_id','=','b.id')
@@ -122,7 +140,7 @@ class DashboardController extends Controller
             $facultyChart[$participant->fakultas_kode]['prodi'][trim($participant->prodi_kode)]['total']++;
         } 
         
-        return view('superadmin.dashboard.index', compact('activities', 'participants', 'activityReports', 'genderCount', 'facultyChart'));
+        return view('superadmin.dashboard.index', compact('activities', 'participants', 'activityReports', 'genderCount', 'facultyChart', 'chartSize'));
     }
 
     public function pimpinanDashboard()
@@ -133,6 +151,15 @@ class DashboardController extends Controller
 
         $activityReports = ActivityReport::where('activity_id', $activities->id)->count();
 
+        $chartSize = DB::table('biodatas as b')
+        ->select('b.chart_size',DB::raw('COUNT(*) as total'))
+        ->join('activity_participants as ap','ap.user_id','=','b.id')
+        ->where('ap.activity_id','=',$activities->id)
+        ->groupBy('b.chart_size')
+        ->get()
+        ->pluck('total', 'chart_size')
+        ->toArray();
+
         $genderCount = DB::table('biodatas as b')
         ->select('b.gender',DB::raw('COUNT(*) as total'))
         ->join('activity_participants as ap','ap.user_id','=','b.id')
@@ -163,6 +190,6 @@ class DashboardController extends Controller
             $facultyChart[$participant->fakultas_kode]['prodi'][trim($participant->prodi_kode)]['total']++;
         } 
         
-        return view('superadmin.dashboard.index', compact('activities', 'participants', 'activityReports', 'genderCount', 'facultyChart'));
+        return view('superadmin.dashboard.index', compact('activities', 'participants', 'activityReports', 'genderCount', 'facultyChart', 'chartSize'));
     }
 }
