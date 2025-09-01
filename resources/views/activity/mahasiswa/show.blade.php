@@ -105,12 +105,20 @@
             </tbody>
             <div class="card-header">
                 <h4 class="mb-0">Laporan Kegiatan</h4>
-                @if ($startDate <= date('Y-m-d') && $endDate >= date('Y-m-d'))
+                @if (date('Y-m-d', strtotime($startDate)) <= date('Y-m-d') && date('Y-m-d', strtotime($endDate)) >= date('Y-m-d'))                
                     @if (date('Y-m-d H:i:s') >= $time['start'] && date('Y-m-d H:i:s') <= $time['end'])
                         <div class="d-flex justify-content-end">
                             <button class="btn btn-primary btn-sm" id="btnAddActivityReport">Tambah Laporan</button>
                         </div>
+                    @else
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary btn-sm" disabled>Laporan belum dibuka</button>
+                        </div>
                     @endif
+                @else                
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-secondary btn-sm" disabled>Laporan sudah ditutup</button>
+                    </div>
                 @endif
             </div>
             <div class="card-body">

@@ -43,7 +43,7 @@ class MhsActivityController extends Controller
 
         // Tentukan apakah user boleh mengunduh sertifikat
         $allowCertificate = $countActivityReport >= $rentangHari ? true : false;
-
+        // dd($time, $startDate, $endDate);
         // Kembalikan view dengan data yang dibutuhkan
         return view('activity.mahasiswa.show', compact('activity', 'time', 'allowCertificate', 'startDate', 'endDate'));
     }
