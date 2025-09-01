@@ -162,7 +162,7 @@
                                 <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="file">File</label>
+                                <label for="file">File <code>*Wajib JPG/JPEG/PNG.</code> <code>Ukuran: max:2048KB</code></label>
                                 <input type="file" class="form-control" id="file" name="file" accept="image/*">
                             </div>
                             <div class="form-group mb-3">
