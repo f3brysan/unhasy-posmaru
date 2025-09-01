@@ -144,6 +144,7 @@ class MsActivityController extends Controller
                     'x_coordinate' => $request->coordinate_x,
                     'y_coordinate' => $request->coordinate_y,
                     'font_size' => $request->font_size,
+                    'link_wag' => $request->link_wag,
                     'updated_by' => auth()->user()->name  // Track who updated the record
                 ]
             );

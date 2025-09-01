@@ -347,6 +347,10 @@
                             </div>
                         </div>
                         <div class="form-group mb-2">
+                            <label for="link_wag">Link Grup WA</label>
+                            <textarea class="form-control" id="link_wag" name="link_wag" rows="3">{{ $activity->link_wag }}</textarea>
+                        </div>
+                        <div class="form-group mb-2">
                             <label for="status">Template Sertifikat</label>
                             <input type="file" class="form-control" id="certificate_template"
                                 name="certificate_template">
