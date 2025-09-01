@@ -295,7 +295,7 @@
                     text: 'Grafik Ukuran Kaos'
                 },
                 tooltip: {
-                    valueSuffix: '%'
+                    valueSuffix: ' pcs'
                 },
 
                 plotOptions: {
