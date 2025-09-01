@@ -18,12 +18,12 @@ class SiakaduController extends Controller
                 'password' => $password
             );
 
-            if (app()->environment('production')) {
+            if (env('APP_DEBUG') == false) {
                 $url = 'http://siakad.unhasy.ac.id/api/all.php';
             } else {
                 $url = 'https://siakad.unhasy.ac.id/api/all.php';
             }            
-
+            
             $cekAuthSiakad = $this->requestData($url, 'POST', $parr);
 
             if ($cekAuthSiakad->code == '401') {
