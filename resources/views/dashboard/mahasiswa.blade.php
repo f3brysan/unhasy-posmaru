@@ -82,27 +82,36 @@
                                 $end = Carbon\Carbon::parse($myActivities->activity->activity_end_date);
                                 $dayCount = $end->diffInDays($start) + 1;
                                 $dayNow = $now->diffInDays($start) + 1;
-                                $progress = $dayNow / $dayCount * 100;
+                                $progress = ($dayNow / $dayCount) * 100;
                                 $dayProgress = $dayCount - $dayNow;
-                                
+
                                 if ($progress > 100) {
-                                    $progress = 100;                                    
+                                    $progress = 100;
                                 }
                             @endphp
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: {{ $progress }}%">
-                            @if ($progress >= 100)
-                                Selesai
-                            @else
-                                {{ $dayProgress }} Hari lagi
-                            @endif
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                style="width: {{ $progress }}%">
+                                @if ($progress >= 100)
+                                    Selesai
+                                @else
+                                    {{ $dayProgress }} Hari lagi
+                                @endif
                             </div>
                         </div>
-                        <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i> {{ $myReports->count() }} Laporan terkirim.
+                        <div class="text-white text-opacity-80 mb-4"><i class="fa fa-file-text"></i>
+                            {{ $myReports->count() }} Laporan terkirim.
                         </div>
-                        <div><a href="{{ URL::to('aktivitas/' . Crypt::encrypt($myActivities->activity_id)) }}"
+                        <div class="float-start">
+                            <a href="{{ URL::to('aktivitas/' . Crypt::encrypt($myActivities->activity_id)) }}"
                                 target="_blank" class="text-white d-flex align-items-center text-decoration-none">Lihat
                                 Laporan
-                                <i class="fa fa-chevron-right ms-2 text-white text-opacity-50"></i></a></div>
+                                <i class="fa fa-chevron-right ms-2 text-white text-opacity-50"></i></a>
+                        </div>
+                        <div class="float-end">
+                            <a href="{{ $myActivities->activity->link_wag }}"
+                                target="_blank" class="text-white d-flex align-items-center text-decoration-none">Gabung Grup WA
+                                <i class="fa fa-chevron-right ms-2 text-white text-opacity-50"></i></a>
+                        </div>
                     </div>
                     <!-- BEGIN card-body -->
                 </div>
