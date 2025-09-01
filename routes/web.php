@@ -49,6 +49,7 @@ Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan'])->group(function
     Route::get('kegiatan/show/{id}', [MsActivityController::class, 'show']);
     Route::get('kegiatan/participants/{id}', [ParticipantController::class, 'getParticipants']);
     Route::post('kegiatan/add-participant', [ParticipantController::class, 'addParticipant']);
+    Route::post('kegiatan/amnesti', [ParticipantController::class, 'amnesti']);
 });
 
 Route::middleware(['auth:web', 'role:mahasiswa'])->group(function () {

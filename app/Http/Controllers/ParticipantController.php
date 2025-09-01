@@ -16,21 +16,21 @@ class ParticipantController extends Controller
 {
     public function getParticipants($id, Request $request)
     {
-        $participants = ActivityParticipant::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', Crypt::decrypt($id))->get();     
-        
+        $participants = ActivityParticipant::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', Crypt::decrypt($id))->get();
+
         $activityReportCountByUser = ActivityReport::where('activity_id', Crypt::decrypt($id))->select('user_id', DB::raw('COUNT(*) as total'))->groupBy('user_id')->get()->pluck('total', 'user_id')->toArray();
-        
+
         $activity = Activity::find(Crypt::decrypt($id));
 
-        
+
         $activity->activity_start_date = date('d-m-Y', strtotime($activity->activity_start_date));
         $activity->activity_end_date = date('d-m-Y', strtotime($activity->activity_end_date));
 
         // count day between activity_start_date and activity_end_date
         $start = \Carbon\Carbon::parse($activity->activity_start_date);
         $end = \Carbon\Carbon::parse($activity->activity_end_date);
-        $daysCount = $start->diffInDays($end) + 1;        
-        
+        $daysCount = $start->diffInDays($end) + 1;
+
         if ($request->ajax()) {
             return datatables()->of($participants)
                 ->addColumn('nim', function ($row) {
@@ -38,7 +38,7 @@ class ParticipantController extends Controller
                     $text .= '<br>';
                     $text .= $row->user->name;
                     return $text;
-                })        
+                })
                 ->addColumn('total_report', function ($row) use ($activityReportCountByUser) {
                     return $activityReportCountByUser[$row->user_id] ?? 0;
                 })
@@ -47,7 +47,7 @@ class ParticipantController extends Controller
                     $reportCount = $activityReportCountByUser[$row->user_id] ?? 0;
                     if ($row->is_permitted == 1) {
                         return '<span class="badge bg-success">Lengkap</span>';
-                    } 
+                    }
 
                     if ($reportCount == $daysCount) {
                         return '<span class="badge bg-success">Lengkap</span>';
@@ -56,8 +56,8 @@ class ParticipantController extends Controller
                     }
                 })
                 ->addColumn('faculty', function ($row) {
-                    $text = $row->user->biodata->prodi->prodi . '<br>';
-                    $text .= 'Fakultas ' . $row->user->biodata->fakultas->fakultas;
+                    $text = $row->user->biodata->prodi->prodi.'<br>';
+                    $text .= 'Fakultas '.$row->user->biodata->fakultas->fakultas;
                     return $text;
                 })
                 ->addColumn('action', function ($row) {
@@ -65,18 +65,18 @@ class ParticipantController extends Controller
                     if (auth()->user()->hasRole('superadmin|baak')) {
                         $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
                         if ($row->is_permitted == 0) {
-                            $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-warning m-1" data-id="'.Crypt::encrypt($row->id).'">Amnesti</a>';
+                            $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-warning m-1 amnesti" data-id="'.Crypt::encrypt($row->id).'">Amnesti</a>';
                         }
                     }
                     $btn .= '<a href="'.URL::to('sertifikat/cetak/'.Crypt::encrypt($row->id)).'" class="btn btn-sm btn-danger m-1" target="_blank">Cetak Sertifikat</a>';
-                    
+
                     return $btn;
                 })
                 ->rawColumns(['faculty', 'action', 'nim', 'status'])
                 ->make(true);
-        }        
+        }
     }
-    
+
     public function addParticipant(Request $request)
     {
         try {
@@ -96,7 +96,7 @@ class ParticipantController extends Controller
             // Check if participant already exists
             $getParticipant = User::where('no_induk', $request->nim)->first();
 
-            if (!$getParticipant) {
+            if (! $getParticipant) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Tidak bisa menambahkan peserta, NIM tidak ditemukan',
@@ -125,6 +125,24 @@ class ParticipantController extends Controller
             ], 200);
         } catch (\Throwable $th) {
             // Return error response if exception occurs
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function amnesti(Request $request)
+    {
+        try {
+            $participant = ActivityParticipant::find(Crypt::decrypt($request->id));            
+            $participant->is_permitted = 1;
+            $participant->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Peserta berhasil diberikan amnesti',
+            ], 200);
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
                 'message' => $th->getMessage(),

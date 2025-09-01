@@ -177,7 +177,7 @@
                                                         <th class="text-center">NIM</th>
                                                         <th class="text-center">Nama</th>
                                                         <th class="text-center">Prodi/Fakultas</th>
-                                                        <th class="text-center">Bukti Kehadiran</th>                                                        
+                                                        <th class="text-center">Bukti Kehadiran</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -197,7 +197,7 @@
                                                                 <p class="small mt-2">
                                                                     {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
                                                                 </p>
-                                                            </td>                                                            
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -387,12 +387,11 @@
                     url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
                     type: 'GET'
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'nim',
                         name: 'nim',
                         className: 'text-center'
-                    },                    
+                    },
                     {
                         data: 'faculty',
                         name: 'faculty',
@@ -504,6 +503,33 @@
                         toastr.error(xhr.responseJSON.message, 'Oops!');
                         $('#btnSubmit').html('Save Changes');
                         $('#btnSubmit').attr('disabled', false);
+                    }
+                });
+            });
+
+            $(document).on('click', '.amnesti', function() {
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: 'Apakah Anda yakin ingin memberikan amnesti?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Berikan Amnesti',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ URL::to('kegiatan/amnesti') }}",
+                            type: 'POST',
+                            data: { id: id },
+                            dataType: "JSON",
+                            success: function(response) {
+                                toastr.success(response.message, 'Success!');
+                                $('#participantsTable').DataTable().ajax.reload(null, false);
+                            },
+                            error: function(xhr, status, error) {
+                                toastr.error(xhr.responseJSON.message, 'Oops!');
+                            }
+                        });
                     }
                 });
             });
