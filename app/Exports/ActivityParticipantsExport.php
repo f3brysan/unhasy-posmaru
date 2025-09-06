@@ -52,7 +52,7 @@ class ActivityParticipantsExport implements FromCollection, WithHeadings, WithMa
             $participant->user->no_induk ?? '-',
             $participant->user->name ?? '-',
             $participant->user->biodata->prodi->prodi ?? '-',
-            $participant->user->biodata->fakultas->fakultas ?? '-'
+            'Fakultas ' . $participant->user->biodata->fakultas->fakultas ?? '-'
         ];
     }
 }
