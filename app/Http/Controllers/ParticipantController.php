@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Biodata;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 use App\Models\ActivityReport;
@@ -63,7 +64,7 @@ class ParticipantController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = '';
                     if (auth()->user()->hasRole('superadmin|baak')) {
-                        $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
+                        $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-primary m-1 edit" data-id="'.Crypt::encrypt($row->id).'">Edit</a>';
                         if ($row->is_permitted == 0) {
                             $btn .= '<a href="javascript:void(0)" class="btn btn-sm btn-warning m-1 amnesti" data-id="'.Crypt::encrypt($row->id).'">Amnesti</a>';
                         }
@@ -135,12 +136,59 @@ class ParticipantController extends Controller
     public function amnesti(Request $request)
     {
         try {
-            $participant = ActivityParticipant::find(Crypt::decrypt($request->id));            
+            $participant = ActivityParticipant::find(Crypt::decrypt($request->id));
             $participant->is_permitted = 1;
             $participant->save();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Peserta berhasil diberikan amnesti',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function editParticipant(Request $request)
+    {
+        try {
+            $participant = ActivityParticipant::with('user.biodata')->find(Crypt::decrypt($request->id));
+            $dataParticipant = [
+                'nim' => $participant->user->no_induk,
+                'participant_name' => $participant->user->name,
+                'uniform_size' => $participant->user->biodata->chart_size,
+                'hp' => $participant->user->biodata->hp,
+                'gender' => $participant->user->biodata->gender,
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Peserta berhasil diambil',
+                'data' => $dataParticipant
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function updateParticipant(Request $request)
+    {
+        try {
+            $user = User::where('no_induk', $request->nim)->first();
+            $updateBiodata = Biodata::where('id', $user->id)->update([
+                'chart_size' => $request->uniform_size,
+                'hp' => $request->phone_number,
+                'gender' => $request->gender,
+            ]);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Peserta berhasil diubah',
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

@@ -375,6 +375,64 @@
         </div>
     </div>
     {{-- End Modal CRUD --}}
+
+    <!-- Modal Participant -->
+    <div class="modal fade" id="modalParticipant" tabindex="-1" aria-labelledby="modalParticipantLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formParticipant">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalParticipantLabel">Edit Peserta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nim" class="form-label">NIM</label>
+                            <input type="text" class="form-control" id="nim" name="nim" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="participant_name" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="participant_name_edit" name="participant_name_edit"
+                                readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="uniform_size" class="form-label">Ukuran Seragam</label>
+                            <select class="form-select" id="uniform_size" name="uniform_size" required>
+                                <option value="" selected disabled>Pilih Ukuran</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="XXXL">XXXL</option>
+                                <option value="XXXXL">XXXXL</option>
+                                <option value="XXXXXL">XXXXXL</option>                                
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Nomor HP</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="" selected disabled>Pilih Jenis Kelamin</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Participant -->
 @endsection
 @push('js')
     <script>
@@ -511,6 +569,55 @@
                 });
             });
 
+            $(document).on('click', '.edit', function() {
+                $('#formParticipant')[0].reset();
+                let id = $(this).data('id');
+                console.log(id);
+                $.ajax({
+                    url: "{{ URL::to('kegiatan/edit-participant') }}",
+                    method: 'POST',                    
+                    data: {
+                        id: id
+                    },
+                    dataType: 'JSON',
+                    success: function(response) {
+                        console.log(response);
+                        $('#nim').val(response.data.nim);
+                        $('#participant_name_edit').val(response.data.participant_name);
+                        $('#uniform_size').val(response.data.uniform_size);
+                        $('#phone_number').val(response.data.hp);
+                        $('#gender').val(response.data.gender);
+                        $('#modalParticipant').modal('show');                        
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseJSON);
+                        toastr.error(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+            $('#formParticipant').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var data = form.serialize();
+                $.ajax({
+                    url: "{{ URL::to('kegiatan/update-participant') }}",
+                    method: 'POST',
+                    data: data,
+                    dataType: 'JSON',
+                    success: function(response) {
+                        toastr.success(response.message, 'Success!');
+                        $('#modalParticipant').modal('hide');
+                        $('#formParticipant')[0].reset();
+                        $('#participantsTable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseJSON);
+                        toastr.error(xhr.responseJSON.message);
+                    }
+                });
+            });
+
             $(document).on('click', '.amnesti', function() {
                 let id = $(this).data('id');
                 Swal.fire({
@@ -524,11 +631,14 @@
                         $.ajax({
                             url: "{{ URL::to('kegiatan/amnesti') }}",
                             type: 'POST',
-                            data: { id: id },
+                            data: {
+                                id: id
+                            },
                             dataType: "JSON",
                             success: function(response) {
                                 toastr.success(response.message, 'Success!');
-                                $('#participantsTable').DataTable().ajax.reload(null, false);
+                                $('#participantsTable').DataTable().ajax.reload(null,
+                                    false);
                             },
                             error: function(xhr, status, error) {
                                 toastr.error(xhr.responseJSON.message, 'Oops!');
