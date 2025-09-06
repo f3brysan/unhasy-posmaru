@@ -9,10 +9,8 @@ class Biodata extends Model
 {
     use HasFactory;
 
-    protected $table = 'biodatas';    
-    protected $guarded = [
-
-    ];
+    protected $table = 'biodatas';
+    protected $fillable = ['id', 'prodi_kode', 'fakultas_kode', 'gender', 'chart_size', 'hp', 'created_at', 'updated_at'];
 
     public function prodi()
     {
