@@ -23,6 +23,7 @@ class ActivityParticipantsExport implements FromCollection, WithHeadings, WithMa
     {
         return ActivityParticipant::with(['user.biodata.prodi', 'user.biodata.fakultas'])
             ->where('activity_id', $this->activityId)
+            ->orderBy('user.no_induk', 'ASC')
             ->get();
     }
 
