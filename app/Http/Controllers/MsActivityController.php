@@ -8,6 +8,8 @@ use App\Models\ActivityReport;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
+use App\Exports\ActivityParticipantsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Master Activity Controller
@@ -43,11 +45,11 @@ class MsActivityController extends Controller
                         // Show button with encrypted ID (eye icon)
                         $btn .= '<a href="'.URL::to('kegiatan/show/'.Crypt::encrypt($row->id)).'" target="_blank" data-toggle="tooltip" title="Lihat" class="btn btn-info btn-sm">
                                     <i class="ti ti-eye"></i>
+                                </a>';               
+                        // Add Export to Excel button (download icon)
+                        $btn .= '<a href="'.URL::to('kegiatan/export-excel/'.Crypt::encrypt($row->id)).'" target="_blank" data-toggle="tooltip" title="Export ke Excel" class="btn btn-success btn-sm">
+                                    <i class="ti ti-download"></i>
                                 </a>';
-                        // Edit button with encrypted ID (pencil icon)
-                        // $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Edit" class="btn btn-warning btn-sm edit">
-                        //             <i class="ti ti-pencil"></i>
-                        //         </a>';
                         // Delete button with encrypted ID (trash icon)
                         $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Delete" class="btn btn-danger btn-sm delete">
                                     <i class="ti ti-trash"></i>
@@ -319,5 +321,37 @@ class MsActivityController extends Controller
         }        
 
         return view('activity.show', compact('activity', 'reports'));
+    }
+
+    /**
+     * Export activity participants to Excel
+     * 
+     * @param string $id Encrypted activity ID
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportExcel($id)
+    {
+        try {
+            // Decrypt the activity ID
+            $activityId = Crypt::decrypt($id);
+            
+            // Find the activity to get its name for the filename
+            $activity = Activity::find($activityId);
+            
+            if (!$activity) {
+                abort(404, 'Activity not found');
+            }
+            
+            // Generate filename with activity name and current date
+            $filename = 'Peserta_' . str_replace(' ', '_', $activity->name) . '_' . date('Y-m-d_H-i-s') . '.xlsx';
+            
+            // Export to Excel
+            return Excel::download(new ActivityParticipantsExport($activityId), $filename);
+            
+        } catch (\Throwable $th) {
+            // Log the error and return a simple error response
+            \Log::error('Excel export error: ' . $th->getMessage());
+            abort(500, 'Error exporting data: ' . $th->getMessage());
+        }
     }
 }

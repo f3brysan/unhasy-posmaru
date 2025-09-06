@@ -47,6 +47,7 @@ Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan|panitia'])->group(
     Route::post('kegiatan/edit', [MsActivityController::class, 'edit']);
     Route::post('kegiatan/delete', [MsActivityController::class, 'delete']);
     Route::get('kegiatan/show/{id}', [MsActivityController::class, 'show']);
+    Route::get('kegiatan/export-excel/{id}', [MsActivityController::class, 'exportExcel']);
     Route::get('kegiatan/participants/{id}', [ParticipantController::class, 'getParticipants']);
     Route::post('kegiatan/add-participant', [ParticipantController::class, 'addParticipant']);
     Route::post('kegiatan/edit-participant', [ParticipantController::class, 'editParticipant']);
