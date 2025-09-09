@@ -16,7 +16,9 @@
                 <h5>Data Kegiatan Posmaru</h5>
             </div>
             <div class="card-body">
+                @hasrole('superadmin|baak')
                 <button class="btn btn-primary" id="tambahKegiatan">Tambah</button>
+                @endhasrole
             </div>
             <div class="card-datatable table table-responsive pt-0">
                 <table class="datatables-basic table table-responsive" id="myTable">
