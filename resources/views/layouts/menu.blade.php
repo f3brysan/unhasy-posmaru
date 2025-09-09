@@ -9,7 +9,7 @@
                 </a>
             </li>
 
-            @role('superadmin|baak')
+            @role('superadmin|baak|panitia')
             {{-- Start POSMARU --}}
              <li class="menu-item {{ request()->is('kegiatan') ? 'active' : '' }}">
                 <a href="{{ URL::to('kegiatan') }}" class="menu-link">

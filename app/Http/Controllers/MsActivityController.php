@@ -45,30 +45,33 @@ class MsActivityController extends Controller
                         // Show button with encrypted ID (eye icon)
                         $btn .= '<a href="'.URL::to('kegiatan/show/'.Crypt::encrypt($row->id)).'" target="_blank" data-toggle="tooltip" title="Lihat" class="btn btn-info btn-sm">
                                     <i class="ti ti-eye"></i>
-                                </a>';               
+                                </a>';
                         // Add Export to Excel button (download icon)
                         $btn .= '<a href="'.URL::to('kegiatan/export-excel/'.Crypt::encrypt($row->id)).'" target="_blank" data-toggle="tooltip" title="Export ke Excel" class="btn btn-success btn-sm">
                                     <i class="ti ti-download"></i>
                                 </a>';
-                        // Delete button with encrypted ID (trash icon)
-                        $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Delete" class="btn btn-danger btn-sm delete">
+                        if (auth()->user()->hasRole('superadmin|baak')) {
+                            // Delete button with encrypted ID (trash icon)
+                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" title="Delete" class="btn btn-danger btn-sm delete">
                                     <i class="ti ti-trash"></i>
                                 </a>';
-                        // Status toggle button based on current status
-                        if ($row->is_active == 1) {
-                            // If active, show "Non Aktifkan" (Deactivate) button (toggle-left icon)
-                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="0" title="Non Aktifkan" class="btn btn-secondary btn-sm change-status">
-                                        <i class="ti ti-toggle-right"></i>
-                                    </a>';
-                        } else {
-                            // If inactive, show "Aktifkan" (Activate) button (toggle-right icon)
-                            $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="1" title="Aktifkan" class="btn btn-success btn-sm change-status">
-                                        <i class="ti ti-toggle-left"></i>
-                                    </a>';
+                            if ($row->is_active == 1) {
+                                // If active, show "Non Aktifkan" (Deactivate) button (toggle-left icon)
+                                $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="0" title="Non Aktifkan" class="btn btn-secondary btn-sm change-status">
+                                                <i class="ti ti-toggle-right"></i>
+                                            </a>';
+                            } else {
+                                // If inactive, show "Aktifkan" (Activate) button (toggle-right icon)
+                                $btn .= '<a href="javascript:void(0)" data-toggle="tooltip" data-id="'.Crypt::encrypt($row->id).'" data-status="1" title="Aktifkan" class="btn btn-success btn-sm change-status">
+                                                <i class="ti ti-toggle-left"></i>
+                                            </a>';
+                            }
                         }
+                        // Status toggle button based on current status
+    
                         $btn .= '</div>';
 
-                        return $btn;                        
+                        return $btn;
                     })
                     // Add participant count column (hardcoded to 99 for now)
                     ->addColumn('peserta', function ($row) {
@@ -105,7 +108,7 @@ class MsActivityController extends Controller
      */
     public function store(Request $request)
     {
-        try {            
+        try {
             // Validate the incoming request data
             $validator = $this->validateActivity($request);
 
@@ -118,13 +121,13 @@ class MsActivityController extends Controller
             }
 
             $path = Activity::where('id', $request->id)->first()->bg_certificate;
-            $path = !empty($path) ? $path : null;
+            $path = ! empty($path) ? $path : null;
 
             if ($request->hasFile('certificate_template')) {
                 $file = $request->file('certificate_template');
-                $fileName = $request->name . '_' . date('YmdHis') . '.' . $file->getClientOriginalExtension();
+                $fileName = $request->name.'_'.date('YmdHis').'.'.$file->getClientOriginalExtension();
                 $file->move(asset('uploads/certificate_template'), $fileName);
-                $path = 'uploads/certificate_template/' . $fileName;
+                $path = 'uploads/certificate_template/'.$fileName;
             }
 
             // Create new activity or update existing one based on ID
@@ -227,7 +230,7 @@ class MsActivityController extends Controller
         try {
             // Find activity by decrypted ID
             $activity = Activity::find(Crypt::decrypt($request->id));
-            
+
             // Update the status
             $activity->is_active = $request->status;
             $activity->save();
@@ -258,7 +261,7 @@ class MsActivityController extends Controller
         try {
             // Find activity by decrypted ID
             $activity = Activity::find(Crypt::decrypt($request->id));
-            
+
             // Return activity data for editing
             return response()->json([
                 'status' => 'success',
@@ -285,10 +288,10 @@ class MsActivityController extends Controller
         try {
             // Find activity by decrypted ID
             $activity = Activity::find(Crypt::decrypt($request->id));
-            
+
             // Delete the activity
             $activity->delete();
-            
+
             // Return success response
             return response()->json([
                 'status' => 'success',
@@ -312,13 +315,13 @@ class MsActivityController extends Controller
             for ($date = $activity->activity_start_date; $date <= $activity->activity_end_date; $date++) {
                 $reports[$date] = [];
             }
-        }        
+        }
 
         $activityReports = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)->get();
-        
+
         foreach ($activityReports as $report) {
             $reports[$report->tgl_setor][] = $report;
-        }        
+        }
 
         return view('activity.show', compact('activity', 'reports'));
     }
@@ -334,24 +337,24 @@ class MsActivityController extends Controller
         try {
             // Decrypt the activity ID
             $activityId = Crypt::decrypt($id);
-            
+
             // Find the activity to get its name for the filename
             $activity = Activity::find($activityId);
-            
-            if (!$activity) {
+
+            if (! $activity) {
                 abort(404, 'Activity not found');
             }
-            
+
             // Generate filename with activity name and current date
-            $filename = 'Peserta_' . str_replace(' ', '_', $activity->name) . '_' . date('Y-m-d_H-i-s') . '.xlsx';
-            
+            $filename = 'Peserta_'.str_replace(' ', '_', $activity->name).'_'.date('Y-m-d_H-i-s').'.xlsx';
+
             // Export to Excel
             return Excel::download(new ActivityParticipantsExport($activityId), $filename);
-            
+
         } catch (\Throwable $th) {
             // Log the error and return a simple error response
-            \Log::error('Excel export error: ' . $th->getMessage());
-            abort(500, 'Error exporting data: ' . $th->getMessage());
+            \Log::error('Excel export error: '.$th->getMessage());
+            abort(500, 'Error exporting data: '.$th->getMessage());
         }
     }
 }
