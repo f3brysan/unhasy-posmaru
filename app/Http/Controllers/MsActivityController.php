@@ -126,7 +126,8 @@ class MsActivityController extends Controller
             if ($request->hasFile('certificate_template')) {
                 $file = $request->file('certificate_template');
                 $fileName = $request->name.'_'.date('YmdHis').'.'.$file->getClientOriginalExtension();
-                $file->move(asset('uploads/certificate_template'), $fileName);
+                $publicPath = 'uploads/certificate_template';
+                $file->move(public_path($publicPath), $fileName);
                 $path = 'uploads/certificate_template/'.$fileName;
             }
 
