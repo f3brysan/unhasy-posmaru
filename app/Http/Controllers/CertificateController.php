@@ -20,7 +20,7 @@ class CertificateController extends Controller
         $data = [
             'nama' => $participant->user->name,   
             'tanggal' => date('d-m-Y'),        
-            'backgroundImage' => asset( $participant->activity->bg_certificate),
+            'backgroundImage' => public_path( $participant->activity->bg_certificate),
             'name_x' => $participant->activity->x_coordinate,
             'name_y' => $participant->activity->y_coordinate,
             'font_size' => $participant->activity->font_size,
