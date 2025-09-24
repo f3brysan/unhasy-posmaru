@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ActivityParticipant;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\MsActivityController;
 
 class AuthController extends Controller
 {
@@ -78,6 +79,16 @@ class AuthController extends Controller
             ->orderBy('kode_prodi', 'ASC')
             ->get();
 
+        $canRegister = true;
+        $checkActivity = (new MsActivityController)->activeActivityNow();
+        if ($checkActivity) {
+            $canRegister = $checkActivity->registration_start_date <= date('Y-m-d') && $checkActivity->registration_end_date >= date('Y-m-d');            
+        }
+
+        if (!$canRegister) {
+            return view('auth.register_closed', compact('checkActivity'));
+        }
+        
         // Return the registration view with faculties and programs of study
         return view('auth.register', compact('faculties', 'prodis'));
     }

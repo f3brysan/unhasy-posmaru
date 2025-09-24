@@ -357,4 +357,13 @@ class MsActivityController extends Controller
             abort(500, 'Error exporting data: '.$th->getMessage());
         }
     }
+
+    public function activeActivityNow()
+    {
+        $now = date('Y-m-d');
+        $activities = Activity::where('is_active', 1)                    
+                    ->first();
+        
+        return $activities;
+    }
 }
