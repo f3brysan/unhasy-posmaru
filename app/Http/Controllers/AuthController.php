@@ -82,7 +82,7 @@ class AuthController extends Controller
         $canRegister = true;
         $checkActivity = (new MsActivityController)->activeActivityNow();
         if ($checkActivity) {
-            $canRegister = $checkActivity->registration_start_date <= date('Y-m-d') && $checkActivity->registration_end_date.' 15:00:00' >= date('Y-m-d H:i:s');            
+            $canRegister = $checkActivity->registration_start_date <= date('Y-m-d') && $checkActivity->registration_end_date >= date('Y-m-d');            
         }
 
         if (!$canRegister) {
