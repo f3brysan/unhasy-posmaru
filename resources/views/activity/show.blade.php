@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-3">
+                            {{-- <div class="row mb-3">
                                 <div class="col-md-6">
                                     <strong>Batas Awal Absensi:</strong>
                                     <div>{{ $activity->student_report_start }}</div>
@@ -51,7 +51,7 @@
                                     <strong>Batas Akhir Absensi:</strong>
                                     <div>{{ $activity->student_report_end }}</div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <strong>Status:</strong>
@@ -339,7 +339,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group mb-2">
+                        {{-- <div class="form-group mb-2">
                             <div class="row">
                                 <div class="col-6">
                                     <label for="student_report_start">Batas Awal Absensi</label>
@@ -353,7 +353,7 @@
                                         name="student_report_end" value="{{ $activity->student_report_end }}" required>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="form-group mb-2">
                             <div class="row">
                                 <div class="col-4">
@@ -787,6 +787,35 @@
                             },
                             error: function(xhr, status, error) {
                                 toastr.error(xhr.responseJSON.message, 'Oops!');
+                            }
+                        });
+                    }
+                });
+            });
+
+            $(document).on('click', '.delete', function() {
+                let id = $(this).data('id');
+                console.log(id);
+                Swal.fire({
+                    title: 'Apakah Anda yakin ingin menghapus sesi ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ URL::to('kegiatan/delete-activity-session') }}",
+                            type: 'POST',
+                            data: { id: id },
+                            dataType: 'JSON',
+                            success: function(response) {
+                                toastr.success(response.message, 'Success!');
+                                $('#activitySessionsTable').DataTable().ajax.reload(null, false);
+                            },
+                            error: function(xhr, status, error) {
+                                console.log(xhr.responseJSON);
+                                toastr.error(xhr.responseJSON.message);
                             }
                         });
                     }

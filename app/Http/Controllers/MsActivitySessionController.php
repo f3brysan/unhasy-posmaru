@@ -12,7 +12,7 @@ class MsActivitySessionController extends Controller
     {
         $id = Crypt::decrypt($id);
         $activitySession = ActivitySession::where('activity_id', $id)->get();
-        
+
         try {
             if ($request->ajax()) {
                 return datatables()->of($activitySession)
@@ -41,12 +41,31 @@ class MsActivitySessionController extends Controller
     public function storeActivitySession(Request $request)
     {
         try {
-            
+
             $request->validate([
                 'name' => 'required',
-                'student_report_start' => 'required',
-                'student_report_end' => 'required',
+                'student_report_start' => 'required|',
+                'student_report_end' => 'required|after_or_equal:student_report_start',
             ]);
+
+            $start = $request->student_report_start;
+            $end = $request->student_report_end;
+
+            $exists = ActivitySession::where('activity_id', $request->activity_id)
+                ->where(function ($query) use ($start, $end) {
+                    $query->where(function ($q) use ($start, $end) {
+                        $q->where('student_report_start', '<', $end)
+                            ->where('student_report_end', '>', $start);
+                    });
+                })
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Waktu mulai dan waktu selesai tidak boleh overlap dengan sesi lain'
+                ], 422);
+            }
 
             $activitySession = ActivitySession::updateOrCreate([
                 'id' => $request->id
@@ -68,6 +87,6 @@ class MsActivitySessionController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
-        
+
     }
 }

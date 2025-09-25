@@ -187,36 +187,31 @@ class MsActivityController extends Controller
             'name' => 'required|string|max:255',
             'year' => 'required|integer|min:2000|max:2100',
             'activity_start_date' => 'required|date',
-            'activity_end_date' => 'required|date|after_or_equal:activity_start_date',
+            'activity_end_date' => 'required|date',
             'registration_start_date' => 'required|date',
-            'registration_end_date' => 'required|date|after_or_equal:registration_start_date',
-            'student_report_start' => 'required',
-            'student_report_end' => 'required|after_or_equal:student_report_start',
+            'registration_end_date' => 'required|date',            
         ];
 
         // Custom error messages in Indonesian
         $messages = [
             'name.required' => 'Nama kegiatan wajib diisi',
-            'year.required' => 'Tahun wajib diisi',
-            'activity_end_date.after_or_equal' => 'Pelaksanaan akhir harus lebih besar dari atau sama dengan pelaksanaan awal',
-            'registration_end_date.after_or_equal' => 'Pendaftaran akhir harus lebih besar dari atau sama dengan pendaftaran awal',
-            'student_report_end.after_or_equal' => 'Absensi akhir harus lebih besar dari atau sama dengan absensi awal',
+            'year.required' => 'Tahun wajib diisi',            
         ];
 
         // Create validator instance
         $validator = Validator::make($request->all(), $rules, $messages);
 
         // Add custom validation rules for date ranges
-        $validator->after(function ($validator) use ($request) {
-            // Business rule: Activity dates must be after registration end date
-            if ($request->activity_start_date <= $request->registration_end_date) {
-                $validator->errors()->add('activity_start_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
-            }
+        // $validator->after(function ($validator) use ($request) {
+        //     // Business rule: Activity dates must be after registration end date
+        //     if ($request->activity_start_date <= $request->registration_end_date) {
+        //         $validator->errors()->add('activity_start_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
+        //     }
 
-            if ($request->activity_end_date <= $request->registration_end_date) {
-                $validator->errors()->add('activity_end_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
-            }
-        });
+        //     if ($request->activity_end_date <= $request->registration_end_date) {
+        //         $validator->errors()->add('activity_end_date', 'Pelaksanaan harus lebih besar dari pendaftaran akhir');
+        //     }
+        // });
 
         return $validator;
     }
