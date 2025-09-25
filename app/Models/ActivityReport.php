@@ -11,7 +11,7 @@ class ActivityReport extends Model
     use HasFactory, HasUuids;
     protected $table = 'activity_reports';    
     public $incrementing = false;
-    protected $guarded = [];
+    protected $fillable = ['user_id', 'activity_id', 'activity_session_id', 'picture', 'description', 'tgl_setor'];
 
     public function activity()
     {
