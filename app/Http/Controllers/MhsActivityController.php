@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ActivityReport;
+use App\Models\ActivitySession;
 use App\Models\ActivityParticipant;
-use Illuminate\Support\Facades\Crypt;
 
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,6 +30,10 @@ class MhsActivityController extends Controller
         // Cari data laporan kegiatan yang diinput oleh user
         $activityReport = ActivityReport::where('activity_id', $id)->where('user_id', auth()->user()->id)->get();
 
+        $activitySession = ActivitySession::where('activity_id', $id)->get();
+
+        $sessionNow = $activitySession->where('student_report_start', '<=', date('H:i:s'))->where('student_report_end', '>=', date('H:i:s'))->first();
+
         // Hitung jumlah laporan kegiatan yang diinput oleh user
         $countActivityReport = $activityReport->count();
 
@@ -44,27 +49,35 @@ class MhsActivityController extends Controller
         // Tentukan apakah user boleh mengunduh sertifikat
         $allowCertificate = $countActivityReport >= $rentangHari ? true : false;
         $allowCertificate = $activity->is_permitted == 1 ? true : $allowCertificate;
-        
+
         // Kembalikan view dengan data yang dibutuhkan
-        return view('activity.mahasiswa.show', compact('activity', 'time', 'allowCertificate', 'startDate', 'endDate'));
+        return view('activity.mahasiswa.show', compact('activity', 'time', 'allowCertificate', 'startDate', 'endDate', 'sessionNow'));
     }
 
     public function getActivity($id, Request $request)
     {
         $id = Crypt::decrypt($id);
-        $reports = ActivityReport::where('activity_id', $id)->where('user_id', auth()->user()->id)->get();
+        $reports = ActivityReport::with('activitySession')->where('activity_id', $id)->where('user_id', auth()->user()->id)->get();
         try {
             if ($request->ajax()) {
                 return datatables()->of($reports)
                     ->addIndexColumn()
                     ->addColumn('action', function ($row) {
                         $button = '';
-                        if ($row->created_at->format('Y-m-d') == date('Y-m-d')) {
+                        
+                        $start = $row->activitySession->student_report_start;
+                        $end = $row->activitySession->student_report_end;
+                        $now = date('H:i:s');
+
+                        if ($now >= $start && $now <= $end) {
                             $button = '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="'.Crypt::encrypt($row->id).'"><i class="fa fa-trash"></i></a>';
                         }
                         return $button;
                     })
-                    ->addColumn('file', function ($row) {
+                    ->addColumn('session', function ($row) {
+                        return $row->activitySession->name;
+                    })
+                    ->addColumn('file', function ($row) {                        
                         $filePath = public_path($row->picture);
                         if (file_exists($filePath)) {
                             return '<a class="btn btn-sm btn-primary" href="'.asset($row->picture).'" target="_blank"><i class="fa fa-file"></i>&nbsp;File Laporan</a>';
@@ -72,7 +85,7 @@ class MhsActivityController extends Controller
                             return '-';
                         }
                     })
-                    ->rawColumns(['action', 'file'])
+                    ->rawColumns(['action', 'file', 'session'])
                     ->make(true);
             }
         } catch (\Throwable $th) {
@@ -108,8 +121,10 @@ class MhsActivityController extends Controller
             // Check if the user has already submitted the report today
             $checkOldReport = ActivityReport::where('activity_id', $request->activity_id)
                 ->where('user_id', auth()->user()->id)
+                ->where('activity_session_id', $request->session_id)
                 ->where('tgl_setor', date('Y-m-d'))
                 ->first();
+
             if ($checkOldReport) {
                 // Delete the old report
                 unlink(public_path($checkOldReport->picture));
@@ -140,6 +155,7 @@ class MhsActivityController extends Controller
             $activityReport = ActivityReport::updateOrCreate([
                 'activity_id' => $request->activity_id,
                 'user_id' => auth()->user()->id,
+                'activity_session_id' => $request->activity_session_id,
                 'tgl_setor' => date('Y-m-d'),
             ], [
                 'picture' => $path,

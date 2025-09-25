@@ -2,7 +2,17 @@
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="card">
+        @if (!empty($sessionNow))
+            <div class="card mt-4">
+                <marquee>
+                    <div class="card-body">                    
+                        <h4><i class="fa fa-info-circle"></i> Sesi kegiatan saat ini adalah {{ $sessionNow->name }}. Pengumpulan laporan dilakukan pada {{ $sessionNow->student_report_start }} sampai dengan {{ $sessionNow->student_report_end }}.</h4>                    
+                    </div>
+                </marquee>  
+            </div>
+        @endif
+
+        <div class="card mt-4">
             <div class="card-header">
                 <h4 class="mb-0">Detail Kegiatan</h4>
             </div>
@@ -101,23 +111,15 @@
         </div>
 
         <div class="card mt-4">
-            <tbody>
-            </tbody>
             <div class="card-header">
                 <h4 class="mb-0">Laporan Kegiatan</h4>
-                @if (date('Y-m-d', strtotime($startDate)) <= date('Y-m-d') && date('Y-m-d', strtotime($endDate)) >= date('Y-m-d'))                
-                    @if (date('Y-m-d H:i:s') >= $time['start'] && date('Y-m-d H:i:s') <= $time['end'])
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary btn-sm" id="btnAddActivityReport">Tambah Laporan</button>
-                        </div>
-                    @else
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-secondary btn-sm" disabled>Laporan belum dibuka</button>
-                        </div>
-                    @endif
-                @else                
+                @if (!empty($sessionNow))
                     <div class="d-flex justify-content-end">
-                        <button class="btn btn-secondary btn-sm" disabled>Laporan sudah ditutup</button>
+                        <button class="btn btn-primary btn-sm" id="btnAddActivityReport">Tambah Laporan</button>
+                    </div>
+                @else
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-secondary btn-sm" disabled>Laporan belum dibuka</button>
                     </div>
                 @endif
             </div>
@@ -127,6 +129,7 @@
                         <thead>
                             <tr>
                                 <th>Tanggal</th>
+                                <th>Sesi</th>
                                 <th>Deskripsi Kegiatan</th>
                                 <th>File</th>
                                 <th>Aksi</th>
@@ -151,6 +154,7 @@
                     <form id="activityReportForm" enctype="multipart/form-data">
                         <input type="hidden" name="activity_id" value="{{ $activity->activity_id }}">
                         <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                        <input type="hidden" name="activity_session_id" value="{{ $sessionNow->id ?? null }}">
                         <div class="modal-body">
                             <div class="form-group mb-3">
                                 <label for="tgl_setor">Tanggal Lapor</label>
@@ -162,7 +166,8 @@
                                 <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="file">File <code>*Wajib JPG/JPEG/PNG.</code> <code>Ukuran: max:2048KB</code></label>
+                                <label for="file">File <code>*Wajib JPG/JPEG/PNG.</code> <code>Ukuran:
+                                        max:2048KB</code></label>
                                 <input type="file" class="form-control" id="file" name="file" accept="image/*">
                             </div>
                             <div class="form-group mb-3">
@@ -184,7 +189,7 @@
     @endsection
 
     @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $('#activityReportTable').DataTable({
                 responsive: true,
@@ -194,6 +199,13 @@
                 columns: [{
                         data: 'tgl_setor',
                         name: 'tgl_setor',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'session',
+                        name: 'session',
+                        orderable: false,
+                        searchable: false,
                         className: 'text-center'
                     },
                     {
@@ -257,7 +269,9 @@
                         $.ajax({
                             url: "{{ URL::to('aktivitas/delete-activity-report') }}",
                             type: 'POST',
-                            data: { id: id },
+                            data: {
+                                id: id
+                            },
                             success: function(response) {
                                 $('#activityReportTable').DataTable().ajax.reload();
                                 toastr.success('Laporan berhasil dihapus');
