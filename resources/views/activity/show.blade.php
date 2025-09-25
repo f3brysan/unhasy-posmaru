@@ -4,7 +4,7 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row mb-4">
             <div class="col-md-4">
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-header">
                         <h4 class="mb-0">Detail Kegiatan</h4>
                     </div>
@@ -89,6 +89,33 @@
                             <a href="javascript:void(0)" class="btn btn-primary float-end" id="btnEditActivity">Edit
                                 Kegiatan</a>
                         @endhasrole
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Sesi Kegiatan</h4>
+                    </div>
+                    <div class="card-body">
+                        @hasrole('superadmin|baak')
+                            <div class="d-flex justify-content-end mb-3">
+                                <button class="btn btn-primary" id="btnAddActivitySession">Tambah Sesi</button>
+                            </div>
+                        @endhasrole
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="activitySessionsTable">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Nama Sesi</th>
+                                        <th class="text-center">Waktu Mulai</th>
+                                        <th class="text-center">Waktu Selesai</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -394,8 +421,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="participant_name" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="participant_name_edit" name="participant_name_edit"
-                                readonly>
+                            <input type="text" class="form-control" id="participant_name_edit"
+                                name="participant_name_edit" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="uniform_size" class="form-label">Ukuran Seragam</label>
@@ -408,7 +435,7 @@
                                 <option value="XXL">XXL</option>
                                 <option value="XXXL">XXXL</option>
                                 <option value="XXXXL">XXXXL</option>
-                                <option value="XXXXXL">XXXXXL</option>                                
+                                <option value="XXXXXL">XXXXXL</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -433,13 +460,68 @@
         </div>
     </div>
     <!-- End Modal Participant -->
+
+    {{-- Modal Add Activity Session --}}
+    <div class="modal fade" id="addActivitySessionModal" tabindex="-1" aria-labelledby="addActivitySessionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addActivitySessionModalLabel">Tambah Sesi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formActivitySession">
+                    @csrf
+                    <input type="hidden" name="id" id="id">
+                    <input type="hidden" name="activity_id" value="{{ $activity->id }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nama Sesi</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="student_report_start" class="form-label">Waktu Mulai</label>
+                            <input type="text" class="form-control timepicker" id="student_report_start"
+                                name="student_report_start" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="student_report_end" class="form-label">Waktu Selesai</label>
+                            <input type="text" class="form-control timepicker" id="student_report_end"
+                                name="student_report_end" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{-- End Modal Add Activity Session --}}
 @endsection
 @push('js')
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
     <script>
         $(document).ready(function() {
+            $('.timepicker').timepicker({
+                zindex: 9999999,
+                timeFormat: 'HH:mm',
+                interval: 30,
+                minTime: '00:00',
+                maxTime: '23:59',
+                defaultTime: '08:00',
+                startTime: '00:00',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
+
             $('.data-table').DataTable({
                 responsive: true,
             });
+
             $('#participantsTable').DataTable({
                 scrollX: true,
                 responsive: true,
@@ -477,6 +559,38 @@
                 ]
             });
 
+            $('#activitySessionsTable').DataTable({
+                scrollX: true,
+                responsive: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ URL::to('kegiatan/activity-sessions/' . Crypt::encrypt($activity->id)) }}",
+                    type: 'GET'
+                },
+                columns: [{
+                        data: 'name',
+                        name: 'name',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'student_report_start',
+                        name: 'student_report_start',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'student_report_end',
+                        name: 'student_report_end',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        className: 'text-center'
+                    }
+                ]
+            });
+
             $('#btnAddParticipant').on('click', function() {
                 $('#addParticipantModal').modal('show');
             });
@@ -492,6 +606,33 @@
                     dataType: "JSON",
                     success: function(res) {
                         console.log(res);
+                        toastr.success(res.message);
+                        $('#addParticipantModal').modal('hide');
+                        $('#formAddParticipant')[0].reset();
+                        $('#participantsTable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseJSON);
+                        toastr.error(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+            $('#formActivitySession').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var data = form.serialize();
+                $.ajax({
+                    url: "{{ url('kegiatan/store-activity-session') }}",
+                    method: "POST",
+                    data: data,
+                    dataType: "JSON",
+                    success: function(res) {
+                        console.log(res);
+                        toastr.success(res.message);
+                        $('#addActivitySessionModal').modal('hide');
+                        $('#formActivitySession')[0].reset();
+                        $('#activitySessionsTable').DataTable().ajax.reload(null, false);
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr.responseJSON);
@@ -536,6 +677,10 @@
                 $('#editActivityModal').modal('show');
             });
 
+            $('#btnAddActivitySession').on('click', function() {
+                $('#addActivitySessionModal').modal('show');
+            });
+
             $("#formKegiatan").on('submit', function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
@@ -575,7 +720,7 @@
                 console.log(id);
                 $.ajax({
                     url: "{{ URL::to('kegiatan/edit-participant') }}",
-                    method: 'POST',                    
+                    method: 'POST',
                     data: {
                         id: id
                     },
@@ -587,7 +732,7 @@
                         $('#uniform_size').val(response.data.uniform_size);
                         $('#phone_number').val(response.data.hp);
                         $('#gender').val(response.data.gender);
-                        $('#modalParticipant').modal('show');                        
+                        $('#modalParticipant').modal('show');
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr.responseJSON);

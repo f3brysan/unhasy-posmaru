@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 use App\Models\ActivityReport;
+use App\Models\ActivitySession;
 use Illuminate\Support\Facades\URL;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use App\Exports\ActivityParticipantsExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Master Activity Controller
@@ -309,7 +310,7 @@ class MsActivityController extends Controller
 
     public function show(Request $request)
     {
-        $activity = Activity::find(Crypt::decrypt($request->id));
+        $activity = Activity::find(Crypt::decrypt($request->id));        
 
         $reports = [];
         if ($activity->activity_start_date && $activity->activity_end_date && $activity->activity_start_date <= $activity->activity_end_date) {

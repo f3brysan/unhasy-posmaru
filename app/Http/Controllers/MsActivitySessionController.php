@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\ActivitySession;
+use Illuminate\Support\Facades\Crypt;
+
+class MsActivitySessionController extends Controller
+{
+    public function getActivitySession(Request $request, $id)
+    {
+        $id = Crypt::decrypt($id);
+        $activitySession = ActivitySession::where('activity_id', $id)->get();
+        
+        try {
+            if ($request->ajax()) {
+                return datatables()->of($activitySession)
+                    ->addColumn('action', function ($row) {
+                        return '<div class="btn-group" role="group" aria-label="Aksi">
+                                    <a href="javascript:void(0)" class="btn btn-info btn-sm edit" data-id="'.Crypt::encrypt($row->id).'">
+                                        <i class="ti ti-pencil"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm delete" data-id="'.Crypt::encrypt($row->id).'">
+                                        <i class="ti ti-trash"></i>
+                                    </a>
+                                </div>';
+                    })
+                    ->rawColumns(['action'])
+                    ->addIndexColumn()
+                    ->make(true);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function storeActivitySession(Request $request)
+    {
+        try {
+            
+            $request->validate([
+                'name' => 'required',
+                'student_report_start' => 'required',
+                'student_report_end' => 'required',
+            ]);
+
+            $activitySession = ActivitySession::updateOrCreate([
+                'id' => $request->id
+            ], [
+                'name' => $request->name,
+                'activity_id' => $request->activity_id,
+                'student_report_start' => $request->student_report_start,
+                'student_report_end' => $request->student_report_end,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil disimpan',
+                'data' => $activitySession
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
+        
+    }
+}

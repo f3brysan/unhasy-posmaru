@@ -6,9 +6,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SiakaduController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MsActivityController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MhsActivityController;
 use App\Http\Controllers\ParticipantController;
-use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\MsActivitySessionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,9 @@ Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan|panitia'])->group(
     Route::post('kegiatan/edit-participant', [ParticipantController::class, 'editParticipant']);
     Route::post('kegiatan/update-participant', [ParticipantController::class, 'updateParticipant']);
     Route::post('kegiatan/amnesti', [ParticipantController::class, 'amnesti']);
+
+    Route::get('kegiatan/activity-sessions/{id}', [MsActivitySessionController::class, 'getActivitySession']);
+    Route::post('kegiatan/store-activity-session', [MsActivitySessionController::class, 'storeActivitySession']);
 });
 
 Route::middleware(['auth:web', 'role:mahasiswa'])->group(function () {
