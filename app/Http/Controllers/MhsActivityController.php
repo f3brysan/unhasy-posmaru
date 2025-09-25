@@ -31,8 +31,13 @@ class MhsActivityController extends Controller
         $activityReport = ActivityReport::where('activity_id', $id)->where('user_id', auth()->user()->id)->get();
 
         $activitySession = ActivitySession::where('activity_id', $id)->get();
-
-        $sessionNow = $activitySession->where('student_report_start', '<=', date('H:i:s'))->where('student_report_end', '>=', date('H:i:s'))->first();
+        
+        $dateSessionStart = $activity->activity->activity_start_date;
+        $dateSessionEnd = $activity->activity->activity_end_date;
+        $sessionNow = null;
+        if ($dateSessionStart <= date('Y-m-d') && $dateSessionEnd >= date('Y-m-d')) {
+            $sessionNow = $activitySession->where('student_report_start', '<=', date('H:i:s'))->where('student_report_end', '>=', date('H:i:s'))->first();
+        }
 
         // Hitung jumlah laporan kegiatan yang diinput oleh user
         $countActivityReport = $activityReport->count();
