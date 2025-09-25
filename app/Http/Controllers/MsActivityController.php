@@ -314,13 +314,23 @@ class MsActivityController extends Controller
             }
         }
 
-        $activityReports = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)->get();
+        $activityReports = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)
+        ->select('user_id', 'activity_id', 'tgl_setor')
+        ->groupBy('user_id', 'activity_id', 'tgl_setor')
+        ->get();
 
         foreach ($activityReports as $report) {
             $reports[$report->tgl_setor][] = $report;
         }
-
-        return view('activity.show', compact('activity', 'reports'));
+        
+        $getActivityFile = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)->get();
+        
+        $fileReports = [];
+        foreach ($getActivityFile as $file) {
+            $fileReports[$file->tgl_setor][$file->user_id][] = $file;
+        }        
+        
+        return view('activity.show', compact('activity', 'reports', 'fileReports'));
     }
 
     /**

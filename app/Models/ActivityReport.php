@@ -18,6 +18,16 @@ class ActivityReport extends Model
         return $this->belongsTo(Activity::class, 'activity_id', 'id');
     }
 
+    public function activitySession()
+    {
+        return $this->belongsTo(ActivitySession::class, 'activity_session_id', 'id');
+    }
+
+    public function activityFile()
+    {
+        return $this->hasMany(ActivityReport::class, 'id', 'id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

@@ -213,17 +213,23 @@
                                                             <td class="text-center">{{ $report->user->no_induk }}</td>
                                                             <td>{{ $report->user->name }}</td>
                                                             <td class="text-center">
-                                                                {{ $report->user->biodata->prodi->prodi }}
+                                                                {{ $report->user->biodata->prodi->prodi }}  
                                                                 <br>
                                                                 Fakultas{{ $report->user->biodata->fakultas->fakultas }}
                                                             </td>
                                                             <td class="text-center">
-                                                                <a href="{{ asset($report->picture) }}" target="_blank"
-                                                                    class="btn btn-sm btn-primary"><i
-                                                                        class="fa fa-eye"></i>&nbsp;Lihat</a>
-                                                                <p class="small mt-2">
-                                                                    {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
-                                                                </p>
+
+                                                                @if (!empty($fileReports[$date][$report->user->id]))
+                                                                    @foreach ($fileReports[$date][$report->user_id] as $file)
+                                                                        <a href="{{ asset($file->picture) }}"
+                                                                            target="_blank"
+                                                                            class="btn btn-sm btn-primary"><i
+                                                                                class="fa fa-eye"></i>&nbsp;Lihat</a>
+                                                                        <p class="small mt-2">
+                                                                            {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
+                                                                        </p>
+                                                                    @endforeach
+                                                                @endif                                                        
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -477,17 +483,18 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Sesi</label>
-                            <input type="text" class="form-control" id="name_activity_session" name="name" required>
+                            <input type="text" class="form-control" id="name_activity_session" name="name"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="student_report_start" class="form-label">Waktu Mulai</label>
-                            <input type="text" class="form-control timepicker" id="student_report_start_activity_session"
-                                name="student_report_start" required>
+                            <input type="text" class="form-control timepicker"
+                                id="student_report_start_activity_session" name="student_report_start" required>
                         </div>
                         <div class="mb-3">
                             <label for="student_report_end" class="form-label">Waktu Selesai</label>
-                            <input type="text" class="form-control timepicker" id="student_report_end_activity_session"
-                                name="student_report_end" required>
+                            <input type="text" class="form-control timepicker"
+                                id="student_report_end_activity_session" name="student_report_end" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -808,8 +815,10 @@
                     success: function(response) {
                         console.log(response);
                         $('#name_activity_session').val(response.data.name);
-                        $('#student_report_start_activity_session').val(response.data.student_report_start);
-                        $('#student_report_end_activity_session').val(response.data.student_report_end);
+                        $('#student_report_start_activity_session').val(response.data
+                            .student_report_start);
+                        $('#student_report_end_activity_session').val(response.data
+                            .student_report_end);
                         $('#id_activity_session').val(response.data.id);
                         $('#addActivitySessionModal').modal('show');
                     },
@@ -834,11 +843,14 @@
                         $.ajax({
                             url: "{{ URL::to('kegiatan/delete-activity-session') }}",
                             type: 'POST',
-                            data: { id: id },
+                            data: {
+                                id: id
+                            },
                             dataType: 'JSON',
                             success: function(response) {
                                 toastr.success(response.message, 'Success!');
-                                $('#activitySessionsTable').DataTable().ajax.reload(null, false);
+                                $('#activitySessionsTable').DataTable().ajax.reload(
+                                    null, false);
                             },
                             error: function(xhr, status, error) {
                                 console.log(xhr.responseJSON);
