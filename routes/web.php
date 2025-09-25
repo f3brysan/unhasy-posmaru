@@ -57,6 +57,7 @@ Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan|panitia'])->group(
 
     Route::get('kegiatan/activity-sessions/{id}', [MsActivitySessionController::class, 'getActivitySession']);
     Route::post('kegiatan/store-activity-session', [MsActivitySessionController::class, 'storeActivitySession']);
+    Route::post('kegiatan/edit-activity-session', [MsActivitySessionController::class, 'editActivitySession']);
     Route::post('kegiatan/delete-activity-session', [MsActivitySessionController::class, 'deleteActivitySession']);
 });
 

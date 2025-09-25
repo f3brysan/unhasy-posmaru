@@ -19,10 +19,10 @@ class MsActivitySessionController extends Controller
                 return datatables()->of($activitySession)
                     ->addColumn('action', function ($row) {
                         return '<div class="btn-group" role="group" aria-label="Aksi">
-                                    <a href="javascript:void(0)" class="btn btn-info btn-sm edit" data-id="'.Crypt::encrypt($row->id).'">
+                                    <a href="javascript:void(0)" class="btn btn-info btn-sm edit-activity-session" data-id="'.Crypt::encrypt($row->id).'">
                                         <i class="ti ti-pencil"></i>
                                     </a>
-                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm delete" data-id="'.Crypt::encrypt($row->id).'">
+                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm delete-activity-session" data-id="'.Crypt::encrypt($row->id).'">
                                         <i class="ti ti-trash"></i>
                                     </a>
                                 </div>';
@@ -61,6 +61,8 @@ class MsActivitySessionController extends Controller
                 })
                 ->exists();
 
+            $exists = ! empty($request->id) ? false : $exists;
+            
             if ($exists) {
                 return response()->json([
                     'status' => 'error',
@@ -91,11 +93,32 @@ class MsActivitySessionController extends Controller
 
     }
 
-    public function deleteActivitySession(Request $request){
+    public function editActivitySession(Request $request)
+    {
+        try {
+            $id = Crypt::decrypt($request->id);
+            $activitySession = ActivitySession::find($id);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil diambil',
+                'data' => $activitySession
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteActivitySession(Request $request)
+    {
         try {
             $id = Crypt::decrypt($request->id);
             $checkTransactionExist = ActivityReport::where('activity_session_id', $id)->exists();
-            
+
             if ($checkTransactionExist) {
                 return response()->json([
                     'status' => 'error',
@@ -110,7 +133,7 @@ class MsActivitySessionController extends Controller
                 'status' => 'success',
                 'message' => 'Sesi berhasil dihapus'
             ], 200);
-            
+
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',

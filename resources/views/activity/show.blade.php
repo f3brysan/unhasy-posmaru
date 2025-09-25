@@ -472,21 +472,21 @@
                 </div>
                 <form id="formActivitySession">
                     @csrf
-                    <input type="hidden" name="id" id="id">
+                    <input type="hidden" name="id" id="id_activity_session">
                     <input type="hidden" name="activity_id" value="{{ $activity->id }}">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Sesi</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <input type="text" class="form-control" id="name_activity_session" name="name" required>
                         </div>
                         <div class="mb-3">
                             <label for="student_report_start" class="form-label">Waktu Mulai</label>
-                            <input type="text" class="form-control timepicker" id="student_report_start"
+                            <input type="text" class="form-control timepicker" id="student_report_start_activity_session"
                                 name="student_report_start" required>
                         </div>
                         <div class="mb-3">
                             <label for="student_report_end" class="form-label">Waktu Selesai</label>
-                            <input type="text" class="form-control timepicker" id="student_report_end"
+                            <input type="text" class="form-control timepicker" id="student_report_end_activity_session"
                                 name="student_report_end" required>
                         </div>
                     </div>
@@ -678,6 +678,7 @@
             });
 
             $('#btnAddActivitySession').on('click', function() {
+                $('#formActivitySession')[0].reset();
                 $('#addActivitySessionModal').modal('show');
             });
 
@@ -793,7 +794,33 @@
                 });
             });
 
-            $(document).on('click', '.delete', function() {
+            $(document).on('click', '.edit-activity-session', function() {
+                $('#formActivitySession')[0].reset();
+                let id = $(this).data('id');
+                console.log(id);
+                $.ajax({
+                    url: "{{ URL::to('kegiatan/edit-activity-session') }}",
+                    method: 'POST',
+                    data: {
+                        id: id
+                    },
+                    dataType: 'JSON',
+                    success: function(response) {
+                        console.log(response);
+                        $('#name_activity_session').val(response.data.name);
+                        $('#student_report_start_activity_session').val(response.data.student_report_start);
+                        $('#student_report_end_activity_session').val(response.data.student_report_end);
+                        $('#id_activity_session').val(response.data.id);
+                        $('#addActivitySessionModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseJSON);
+                        toastr.error(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.delete-activity-session', function() {
                 let id = $(this).data('id');
                 console.log(id);
                 Swal.fire({
