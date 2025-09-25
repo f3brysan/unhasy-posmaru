@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityReport;
 use Illuminate\Http\Request;
 use App\Models\ActivitySession;
 use Illuminate\Support\Facades\Crypt;
@@ -88,5 +89,33 @@ class MsActivitySessionController extends Controller
             ], 500);
         }
 
+    }
+
+    public function deleteActivitySession(Request $request){
+        try {
+            $id = Crypt::decrypt($request->id);
+            $checkTransactionExist = ActivityReport::where('activity_session_id', $id)->exists();
+            
+            if ($checkTransactionExist) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Sesi ini tidak dapat dihapus karena sudah ada laporan kegiatan'
+                ], 422);
+            }
+
+            $delete = ActivitySession::find($id);
+            $delete->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sesi berhasil dihapus'
+            ], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }
