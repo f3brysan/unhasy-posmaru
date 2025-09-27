@@ -167,7 +167,7 @@
                             </div>
                             <div class="form-group mb-3">
                                 <label for="file">File <code>*Wajib JPG/JPEG/PNG.</code> <code>Ukuran:
-                                        max:15 MB</code></label>
+                                        max:2048KB</code></label>
                                 <input type="file" class="form-control" id="file" name="file" accept="image/*">
                             </div>
                             <div class="form-group mb-3">
