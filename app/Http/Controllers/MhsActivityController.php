@@ -113,7 +113,7 @@ class MhsActivityController extends Controller
         try {
             // Validate the request
             $validator = Validator::make($request->all(), [
-                'file' => 'required|image|max:2048',
+                'file' => 'required|image|max:15360',
             ]);
 
             if ($validator->fails()) {
