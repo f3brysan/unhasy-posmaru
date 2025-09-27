@@ -77,6 +77,11 @@ Route::post('auth', [AuthController::class, 'auth']);
 Route::get('register', [AuthController::class, 'register']);
 Route::post('store-register', [AuthController::class, 'storeRegister']);
 
+Route::get('phpinfo', function () {
+    phpinfo();
+});
+
+
 
 // API SIAKADU
 Route::post('api/siakadu/get-data/mahasiswa', [SiakaduController::class, 'getDataMahasiswa']);
