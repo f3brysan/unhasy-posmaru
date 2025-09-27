@@ -109,14 +109,11 @@ class MhsActivityController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function storeActivityReport(Request $request)
-    {
-        // Set max file size upload to 100MB (in kilobytes: 102400)
-        ini_set('upload_max_filesize', '100M');
-        ini_set('post_max_size', '100M');
+    {        
         try {
             // Validate the request
             $validator = Validator::make($request->all(), [
-                'file' => 'required|image|max:15360',
+                'file' => 'required|image|max:2048',
             ]);
 
             if ($validator->fails()) {
