@@ -7,6 +7,7 @@ use App\Models\Biodata;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 use App\Models\ActivityReport;
+use App\Models\ActivitySession;
 use Illuminate\Support\Facades\DB;
 use App\Models\ActivityParticipant;
 use Illuminate\Support\Facades\URL;
@@ -32,6 +33,11 @@ class ParticipantController extends Controller
         $end = \Carbon\Carbon::parse($activity->activity_end_date);
         $daysCount = $start->diffInDays($end) + 1;
 
+        $countSessionActivity = ActivitySession::where('activity_id', $activity->id)->get();
+        $countSessionActivity = $countSessionActivity->count();
+
+        $sumLaporan = $daysCount * $countSessionActivity;
+
         if ($request->ajax()) {
             return datatables()->of($participants)
                 ->addColumn('nim', function ($row) {
@@ -43,14 +49,14 @@ class ParticipantController extends Controller
                 ->addColumn('total_report', function ($row) use ($activityReportCountByUser) {
                     return $activityReportCountByUser[$row->user_id] ?? 0;
                 })
-                ->addColumn('status', function ($row) use ($activityReportCountByUser, $daysCount) {
+                ->addColumn('status', function ($row) use ($activityReportCountByUser, $sumLaporan) {
 
                     $reportCount = $activityReportCountByUser[$row->user_id] ?? 0;
                     if ($row->is_permitted == 1) {
                         return '<span class="badge bg-success">Lengkap</span>';
                     }
 
-                    if ($reportCount == $daysCount) {
+                    if ($reportCount == $sumLaporan) {
                         return '<span class="badge bg-success">Lengkap</span>';
                     } else {
                         return '<span class="badge bg-danger">Belum Lengkap</span>';
