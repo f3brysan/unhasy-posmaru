@@ -25,8 +25,11 @@ class MhsActivityController extends Controller
         $id = Crypt::decrypt($id);
 
         // Cari data kegiatan dan peserta
-        $activity = ActivityParticipant::with('activity')->where('activity_id', $id)->first();
-
+        $activity = ActivityParticipant::with('activity')
+                ->where('activity_id', $id)
+                ->where('user_id', auth()->user()->id)
+                ->first();
+        
         // Cari data laporan kegiatan yang diinput oleh user
         $activityReport = ActivityReport::where('activity_id', $id)->where('user_id', auth()->user()->id)->get();
 
@@ -51,8 +54,12 @@ class MhsActivityController extends Controller
         $endDate = \Carbon\Carbon::parse($activity->activity->activity_end_date);
         $rentangHari = $startDate->diffInDays($endDate) + 1; // +1 agar inklusif
 
+        $countSessionActivity = ActivitySession::where('activity_id', $id)->get();
+        $countSessionActivity = $countSessionActivity->count();
+        
+        $sumLaporan = $rentangHari * $countSessionActivity;
         // Tentukan apakah user boleh mengunduh sertifikat
-        $allowCertificate = $countActivityReport >= $rentangHari ? true : false;
+        $allowCertificate = $countActivityReport >= $sumLaporan ? true : false;
         $allowCertificate = $activity->is_permitted == 1 ? true : $allowCertificate;
 
         // Kembalikan view dengan data yang dibutuhkan
