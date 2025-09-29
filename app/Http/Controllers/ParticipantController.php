@@ -46,8 +46,10 @@ class ParticipantController extends Controller
                     $text .= $row->user->name;
                     return $text;
                 })
-                ->addColumn('total_report', function ($row) use ($activityReportCountByUser) {
-                    return $activityReportCountByUser[$row->user_id] ?? 0;
+                ->addColumn('total_report', function ($row) use ($activityReportCountByUser, $sumLaporan) {
+                    $laporan = $activityReportCountByUser[$row->user_id] ?? 0;
+                    $totalLaporan = $sumLaporan;
+                    return $laporan.'/'.$totalLaporan;
                 })
                 ->addColumn('status', function ($row) use ($activityReportCountByUser, $sumLaporan) {
 
