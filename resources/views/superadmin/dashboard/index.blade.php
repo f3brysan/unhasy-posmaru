@@ -118,7 +118,7 @@
                                         <div class="badge rounded bg-label-info me-4 p-2"><i class="fa-solid fa-user"></i>
                                         </div>
                                         <div class="card-info">
-                                            <h5 class="mb-0">{{ $genderCount['L'] }}</h5>
+                                            <h5 class="mb-0">{{ isset($genderCount['L']) ? $genderCount['L'] : 0 }}</h5>
                                             <small>Laki-laki</small>
                                         </div>
                                     </div>
@@ -128,9 +128,9 @@
                                         <div class="badge rounded bg-label-danger me-4 p-2"><i class="fa-solid fa-user"></i>
                                         </div>
                                         <div class="card-info">
-                                            <h5 class="mb-0">{{ $genderCount['P'] }}</h5>
+                                            <h5 class="mb-0">{{ isset($genderCount['P']) ? $genderCount['P'] : 0 }}</h5>
                                             <small>Perempuan</small>
-                                        </div>
+                                        </div>  
                                     </div>
                                 </div>
                                 <div class="col-md-3 col-6">
