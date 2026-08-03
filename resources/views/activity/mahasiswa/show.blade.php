@@ -195,7 +195,13 @@
                 responsive: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ URL::to('aktivitas/get-activity/' . Crypt::encrypt($activity->activity_id)) }}",
+                ajax: {
+                    url: "{{ URL::to('aktivitas/get-activity/' . Crypt::encrypt($activity->activity_id)) }}",
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                },
                 columns: [{
                         data: 'tgl_setor',
                         name: 'tgl_setor',

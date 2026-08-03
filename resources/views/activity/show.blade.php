@@ -536,7 +536,10 @@
                 serverSide: true,
                 ajax: {
                     url: "{{ URL::to('kegiatan/participants/' . Crypt::encrypt($activity->id)) }}",
-                    type: 'GET'
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 },
                 columns: [{
                         data: 'nim',

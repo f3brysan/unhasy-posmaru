@@ -87,7 +87,10 @@
             serverSide: true,
             ajax: {
                 url: "{{ URL::to('master/pengguna') }}",
-                type: 'GET'
+                type: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
             },
             columns: [{
                     data: 'no_induk',

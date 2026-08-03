@@ -189,7 +189,10 @@
             serverSide: true,
             ajax: {
                 url: "{{ URL::to('kegiatan') }}",
-                type: 'GET'
+                type: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
             },
             columns: [{
                     data: 'name',
