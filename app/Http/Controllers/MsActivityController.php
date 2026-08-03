@@ -189,13 +189,13 @@ class MsActivityController extends Controller
             'activity_start_date' => 'required|date',
             'activity_end_date' => 'required|date',
             'registration_start_date' => 'required|date',
-            'registration_end_date' => 'required|date',            
+            'registration_end_date' => 'required|date',
         ];
 
         // Custom error messages in Indonesian
         $messages = [
             'name.required' => 'Nama kegiatan wajib diisi',
-            'year.required' => 'Tahun wajib diisi',            
+            'year.required' => 'Tahun wajib diisi',
         ];
 
         // Create validator instance
@@ -305,31 +305,34 @@ class MsActivityController extends Controller
 
     public function show(Request $request)
     {
-        $activity = Activity::find(Crypt::decrypt($request->id));        
+        $activity = Activity::find(Crypt::decrypt($request->id));
 
         $reports = [];
         if ($activity->activity_start_date && $activity->activity_end_date && $activity->activity_start_date <= $activity->activity_end_date) {
-            for ($date = $activity->activity_start_date; $date <= $activity->activity_end_date; $date++) {
-                $reports[$date] = [];
+
+            for ($date = \Carbon\Carbon::parse($activity->activity_start_date);
+                $date->lte($activity->activity_end_date);
+                $date->addDay()) {
+                $reports[$date->toDateString()] = [];
             }
-        }
+        }        
 
         $activityReports = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)
-        ->select('user_id', 'activity_id', 'tgl_setor')
-        ->groupBy('user_id', 'activity_id', 'tgl_setor')
-        ->get();
+            ->select('user_id', 'activity_id', 'tgl_setor')
+            ->groupBy('user_id', 'activity_id', 'tgl_setor')
+            ->get();        
 
         foreach ($activityReports as $report) {
             $reports[$report->tgl_setor][] = $report;
         }
-        
+
         $getActivityFile = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)->get();
-        
+
         $fileReports = [];
         foreach ($getActivityFile as $file) {
             $fileReports[$file->tgl_setor][$file->user_id][] = $file;
-        }        
-        
+        }
+
         return view('activity.show', compact('activity', 'reports', 'fileReports'));
     }
 
@@ -368,9 +371,9 @@ class MsActivityController extends Controller
     public function activeActivityNow()
     {
         $now = date('Y-m-d');
-        $activities = Activity::where('is_active', 1)                    
-                    ->first();
-        
+        $activities = Activity::where('is_active', 1)
+            ->first();
+
         return $activities;
     }
 }
