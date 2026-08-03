@@ -735,6 +735,9 @@
                 $.ajax({
                     url: "{{ URL::to('kegiatan/edit-participant') }}",
                     method: 'POST',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     data: {
                         id: id
                     },
