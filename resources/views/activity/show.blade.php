@@ -213,7 +213,7 @@
                                                             <td class="text-center">{{ $report->user->no_induk }}</td>
                                                             <td>{{ $report->user->name }}</td>
                                                             <td class="text-center">
-                                                                {{ $report->user->biodata->prodi->prodi }}  
+                                                                {{ $report->user->biodata->prodi->prodi }}
                                                                 <br>
                                                                 Fakultas{{ $report->user->biodata->fakultas->fakultas }}
                                                             </td>
@@ -229,7 +229,7 @@
                                                                             {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
                                                                         </p>
                                                                     @endforeach
-                                                                @endif                                                        
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -573,7 +573,10 @@
                 serverSide: true,
                 ajax: {
                     url: "{{ URL::to('kegiatan/activity-sessions/' . Crypt::encrypt($activity->id)) }}",
-                    type: 'GET'
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 },
                 columns: [{
                         data: 'name',
