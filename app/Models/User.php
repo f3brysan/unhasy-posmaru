@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Biodata::class, 'id', 'id');
     }
+
+    public function activityTasks()
+    {
+        return $this->hasMany(ActivityTask::class, 'user_id', 'id');
+    }
 }

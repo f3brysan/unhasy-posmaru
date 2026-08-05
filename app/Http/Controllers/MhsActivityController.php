@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ActivityTask;
 use App\Models\ActivityReport;
 use App\Models\ActivitySession;
 use App\Models\ActivityParticipant;
@@ -219,6 +220,117 @@ class MhsActivityController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getActivityTask($id, Request $request)
+    {
+        $id = Crypt::decrypt($id);
+        $tasks = ActivityTask::with('activity')
+            ->where('activity_id', $id)
+            ->where('user_id', auth()->user()->id)
+            ->get();
+
+        try {
+            if ($request->ajax()) {
+                return datatables()->of($tasks)
+                    ->addIndexColumn()
+                    ->addColumn('action', function ($row) {
+                        return '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-task" data-id="'.Crypt::encrypt($row->id).'"><i class="fa fa-trash"></i></a>';
+                    })
+                    ->addColumn('session', function ($row) {
+                        return $row->activitySession->name ?? '-';
+                    })
+                    ->addColumn('file', function ($row) {
+                        $filePath = public_path($row->picture);
+                        if ($row->picture && file_exists($filePath)) {
+                            return '<a class="btn btn-sm btn-primary" href="'.asset($row->picture).'" target="_blank"><i class="fa fa-file"></i>&nbsp;File Tugas</a>';
+                        }
+
+                        return '-';
+                    })
+                    ->rawColumns(['action', 'file', 'session'])
+                    ->make(true);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function storeActivityTask(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|mimes:jpg,jpeg,pdf|max:2048',
+                'description' => 'nullable|string',
+            ], [
+                'file.required' => 'File tugas wajib diunggah',
+                'file.mimes' => 'File harus berformat JPG atau PDF',
+                'file.max' => 'Ukuran file maksimal 2MB',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $nim = auth()->user()->no_induk;
+            $file = $request->file('file');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filename = $nim.'_task_'.date('YmdHis').'.'.$extension;
+            $destination = 'activity-task/'.$request->activity_id.'/'.date('Ymd').'/';
+            $file->move(public_path($destination), $filename);
+            $path = $destination.$filename;
+            
+            ActivityTask::updateOrCreate([
+                'activity_id' => $request->activity_id,
+                'user_id' => auth()->user()->id,                
+            ], [
+                'picture' => $path,
+                'description' => $request->description,
+                'tgl_setor' => date('Y-m-d'),
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tugas berhasil diunggah',
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function deleteActivityTask(Request $request)
+    {
+        try {
+            $id = Crypt::decrypt($request->id);
+            $activityTask = ActivityTask::where('id', $id)
+                ->where('user_id', auth()->user()->id)
+                ->firstOrFail();
+
+            if ($activityTask->picture && file_exists(public_path($activityTask->picture))) {
+                unlink(public_path($activityTask->picture));
+            }
+
+            $activityTask->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tugas berhasil dihapus',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
