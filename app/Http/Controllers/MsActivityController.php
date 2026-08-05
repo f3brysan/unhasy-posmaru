@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ActivityParticipantsExport;
 use App\Models\Activity;
-use Illuminate\Http\Request;
 use App\Models\ActivityReport;
 use App\Models\ActivitySession;
-use Illuminate\Support\Facades\URL;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ActivityTask;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
-use App\Exports\ActivityParticipantsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Master Activity Controller
@@ -328,12 +329,18 @@ class MsActivityController extends Controller
 
         $getActivityFile = ActivityReport::with(['user.biodata.prodi', 'user.biodata.fakultas'])->where('activity_id', $activity->id)->get();
 
+        $fileTasks = [];
+        $getActivityTask = ActivityTask::where('activity_id', $activity->id)->get();
+        foreach ($getActivityTask as $task) {
+            $fileTasks[$task->tgl_setor][$task->user_id][] = $task;
+        }
+
         $fileReports = [];
         foreach ($getActivityFile as $file) {
             $fileReports[$file->tgl_setor][$file->user_id][] = $file;
         }
 
-        return view('activity.show', compact('activity', 'reports', 'fileReports'));
+        return view('activity.show', compact('activity', 'reports', 'fileReports', 'fileTasks'));
     }
 
     /**

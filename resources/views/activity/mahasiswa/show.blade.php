@@ -225,8 +225,21 @@
                         <div class="modal-body">
                             <div class="form-group mb-3">
                                 <label for="task_tgl_setor">Tanggal Unggah</label>
-                                <input type="date" class="form-control" id="task_tgl_setor" name="tgl_setor"
-                                    value="{{ date('Y-m-d') }}" readonly>
+                                <select class="form-control" id="task_tgl_setor" name="tgl_setor" required>
+                                    <option value="">Pilih Tanggal</option>
+                                    @php
+                                        $loopDate = $startDate->copy();
+                                    @endphp
+                                    @while ($loopDate->lte($endDate))
+                                        <option value="{{ $loopDate->toDateString() }}"
+                                            {{ $loopDate->isToday() ? 'selected' : '' }}>
+                                            {{ $loopDate->translatedFormat('d F Y') }}
+                                        </option>
+                                        @php
+                                            $loopDate->addDay();
+                                        @endphp
+                                    @endwhile
+                                </select>
                             </div>
                             <div class="form-group mb-3">
                                 <label for="task_description">Deskripsi Tugas</label>

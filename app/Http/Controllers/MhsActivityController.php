@@ -267,10 +267,13 @@ class MhsActivityController extends Controller
             $validator = Validator::make($request->all(), [
                 'file' => 'required|mimes:jpg,jpeg,pdf|max:2048',
                 'description' => 'nullable|string',
+                'tgl_setor' => 'required|date',
             ], [
                 'file.required' => 'File tugas wajib diunggah',
                 'file.mimes' => 'File harus berformat JPG atau PDF',
                 'file.max' => 'Ukuran file maksimal 2MB',
+                'tgl_setor.required' => 'Tanggal unggah wajib dipilih',
+                'tgl_setor.date' => 'Tanggal unggah tidak valid',
             ]);
 
             if ($validator->fails()) {
@@ -294,7 +297,7 @@ class MhsActivityController extends Controller
             ], [
                 'picture' => $path,
                 'description' => $request->description,
-                'tgl_setor' => date('Y-m-d'),
+                'tgl_setor' => $request->tgl_setor,
             ]);
 
             return response()->json([

@@ -205,6 +205,7 @@
                                                         <th class="text-center">Nama</th>
                                                         <th class="text-center">Prodi/Fakultas</th>
                                                         <th class="text-center">Bukti Kehadiran</th>
+                                                        <th class="text-center">Bukti Tugas</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -229,6 +230,19 @@
                                                                             {{ Carbon\Carbon::parse($report->updated_at)->format('d M Y H:i') }}
                                                                         </p>
                                                                     @endforeach
+                                                                @endif
+                                                            </td>
+                                                            <td class="text-center">
+                                                                @if (!empty($fileTasks[$date][$report->user_id]))
+                                                                    @foreach ($fileTasks[$date][$report->user_id] as $task)
+                                                                        <a href="{{ asset($task->picture) }}"
+                                                                            target="_blank"
+                                                                            class="btn btn-sm btn-primary"><i
+                                                                                class="fa fa-eye"></i>&nbsp;Lihat</a>
+                                                                    @endforeach
+                                                                    <p class="small mt-2">
+                                                                        {{ Carbon\Carbon::parse($task->tgl_setor)->format('d M Y H:i') }}
+                                                                    </p>
                                                                 @endif
                                                             </td>
                                                         </tr>
