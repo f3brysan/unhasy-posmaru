@@ -241,7 +241,7 @@
                                                                                 class="fa fa-eye"></i>&nbsp;Lihat</a>
                                                                     @endforeach
                                                                     <p class="small mt-2">
-                                                                        {{ Carbon\Carbon::parse($task->tgl_setor)->format('d M Y H:i') }}
+                                                                        {{ Carbon\Carbon::parse($task->updated_at)->format('d M Y H:i') }}
                                                                     </p>
                                                                 @endif
                                                             </td>
