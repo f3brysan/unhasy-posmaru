@@ -20,3 +20,4 @@ yarn-error.log
 database/seeders/DatabaseSeeder.php
 public/activity-report/
 public/uploads/
+public/activity-task/
