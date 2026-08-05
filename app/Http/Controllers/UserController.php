@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Biodata;
 use Illuminate\Http\Request;
+use App\Models\ActivityReport;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\ActivityParticipant;
 
 class UserController extends Controller
 {
@@ -189,6 +193,74 @@ class UserController extends Controller
                 'status' => 'success',
                 'message' => 'Berhasil mengambil data mahasiswa',
                 'data' => $participant,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function deleteInfo(Request $request)
+    {
+        try {
+            $user = User::with('roles')->findOrFail(Crypt::decrypt($request->id));
+
+            $activityParticipantCount = ActivityParticipant::where('user_id', $user->id)->count();
+            $activityReportCount = ActivityReport::where('user_id', $user->id)->count();
+            $hasBiodata = Biodata::where('id', $user->id)->exists();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'name' => $user->name,
+                    'no_induk' => $user->no_induk,
+                    'role' => $user->roles->pluck('name')->implode(', '),
+                    'activity_participant_count' => $activityParticipantCount,
+                    'activity_report_count' => $activityReportCount,
+                    'has_biodata' => $hasBiodata,
+                ],
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function deleteUser(Request $request)
+    {
+        try {
+            $userId = Crypt::decrypt($request->id);
+            $user = User::findOrFail($userId);
+
+            if ($userId == auth()->id()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Anda tidak dapat menghapus akun yang sedang digunakan',
+                ], 400);
+            }
+
+            DB::transaction(function () use ($user, $userId) {
+                $reports = ActivityReport::where('user_id', $userId)->get();
+                foreach ($reports as $report) {
+                    if ($report->picture && file_exists(public_path($report->picture))) {
+                        unlink(public_path($report->picture));
+                    }
+                    $report->delete();
+                }
+
+                ActivityParticipant::where('user_id', $userId)->delete();
+                Biodata::where('id', $userId)->delete();
+                $user->syncRoles([]);
+                $user->delete();
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Pengguna {$user->name} berhasil dihapus",
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

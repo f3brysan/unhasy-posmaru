@@ -39,6 +39,8 @@ Route::middleware(['auth:web', 'role:superadmin|panitia|baak'])->group(function 
     Route::post('master/pengguna/edit', [UserController::class, 'edit']);
     Route::post('master/pengguna/get-participant', [UserController::class, 'getParticipant']);
     Route::post('master/pengguna/reset-password', [UserController::class, 'resetPassword']);
+    Route::post('master/pengguna/delete-info', [UserController::class, 'deleteInfo']);
+    Route::post('master/pengguna/delete', [UserController::class, 'deleteUser']);
 });
 
 Route::middleware(['auth:web', 'role:superadmin|baak|pimpinan|panitia'])->group(function () {

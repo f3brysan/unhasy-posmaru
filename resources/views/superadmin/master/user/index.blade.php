@@ -233,5 +233,74 @@
                 }
             });
         });
+
+        $(document).on('click', '.deleteUser', function() {
+            var userId = $(this).data('id');
+
+            $.ajax({
+                type: "POST",
+                url: "{{ URL::to('master/pengguna/delete-info') }}",
+                data: {
+                    id: userId,
+                },
+                dataType: "JSON",
+                success: function(response) {
+                    var data = response.data;
+                    var html = `
+                        <div class="text-start">
+                            <p class="mb-2">Data berikut akan ikut terhapus:</p>
+                            <ul class="mb-0">
+                                <li><strong>Nama:</strong> ${data.name}</li>
+                                <li><strong>No Induk:</strong> ${data.no_induk}</li>
+                                <li><strong>Peran:</strong> ${data.role || '-'}</li>
+                                <li><strong>Peserta kegiatan:</strong> ${data.activity_participant_count} data</li>
+                                <li><strong>Laporan aktivitas:</strong> ${data.activity_report_count} data</li>
+                                <li><strong>Biodata:</strong> ${data.has_biodata ? 'Ada' : 'Tidak ada'}</li>
+                            </ul>
+                        </div>
+                    `;
+
+                    Swal.fire({
+                        title: "Hapus Pengguna?",
+                        html: html,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#6c757d",
+                        confirmButtonText: "Ya, hapus!",
+                        cancelButtonText: "Batal"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ URL::to('master/pengguna/delete') }}",
+                                data: {
+                                    id: userId,
+                                },
+                                dataType: "JSON",
+                                success: function(response) {
+                                    $('#myTable').DataTable().ajax.reload();
+                                    Swal.fire({
+                                        title: "Sukses!",
+                                        text: response.message,
+                                        icon: "success"
+                                    });
+                                },
+                                error: function(xhr) {
+                                    Swal.fire({
+                                        title: "Gagal!",
+                                        text: xhr.responseJSON?.message || 'Gagal menghapus pengguna',
+                                        icon: "error"
+                                    });
+                                }
+                            });
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseJSON?.message || 'Gagal mengambil data pengguna');
+                }
+            });
+        });
     </script>
 @endpush
